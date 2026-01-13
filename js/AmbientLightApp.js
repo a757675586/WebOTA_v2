@@ -281,7 +281,7 @@ class AmbientLightApp {
 
     // ============ 模式切换 ============
 
-    switchMode(mode) {
+    async switchMode(mode) {
         this.currentMode = mode;
 
         // 更新 Tab 状态
@@ -299,26 +299,36 @@ class AmbientLightApp {
 
         // 切换模式时自动发送当前选中状态
         if (this.isConnected) {
-            switch (mode) {
-                case 'single':
-                    this.applyColor();
-                    break;
-                case 'multi':
-                    // 发送当前工作模式 (静态/动态)
-                    this.protocol.setDynamicMode(this.dynamicToggle.checked);
-                    // 发送同步模式状态
-                    this.protocol.setSyncMode(this.syncToggle.checked);
-                    // 发送当前选中主题
-                    this.protocol.setMultiTheme(this.selectedMultiIndex + 1);
-                    break;
-                case 'dynamic':
-                    // 如果存在预设，发送当前选中预设
-                    if (this.dynamicPresets[this.selectedDynamicIndex]) {
-                        this.protocol.setDynamicEffect(this.dynamicPresets[this.selectedDynamicIndex].id);
-                    }
-                    break;
+            try {
+                switch (mode) {
+                    case 'single':
+                        await this.applyColor();
+                        break;
+                    case 'multi':
+                        // 发送当前工作模式 (静态/动态)
+                        await this.protocol.setDynamicMode(this.dynamicToggle.checked);
+                        await this.delay(50);
+                        // 发送同步模式状态
+                        await this.protocol.setSyncMode(this.syncToggle.checked);
+                        await this.delay(50);
+                        // 发送当前选中主题
+                        await this.protocol.setMultiTheme(this.selectedMultiIndex + 1);
+                        break;
+                    case 'dynamic':
+                        // 如果存在预设，发送当前选中预设
+                        if (this.dynamicPresets[this.selectedDynamicIndex]) {
+                            await this.protocol.setDynamicEffect(this.dynamicPresets[this.selectedDynamicIndex].id);
+                        }
+                        break;
+                }
+            } catch (error) {
+                console.error('[AmbientLightApp] 切换模式发送指令失败:', error);
             }
         }
+    }
+
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     // ============ 颜色控制 ============
