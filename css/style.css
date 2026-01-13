@@ -1,0 +1,595 @@
+/* ============================================
+   Web BLE OTA - 重新设计的样式
+   现代化布局 + 玻璃态设计
+   ============================================ */
+
+/* ============== CSS 变量 ============== */
+:root {
+    /* 主色调 */
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+
+    /* 功能色 */
+    --success: #10b981;
+    --success-light: #34d399;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+
+    /* 背景 */
+    --bg-dark: #0a0a1a;
+    --bg-surface: #12122a;
+    --bg-card: rgba(255, 255, 255, 0.03);
+    --bg-card-hover: rgba(255, 255, 255, 0.05);
+
+    /* 边框 */
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-light: rgba(255, 255, 255, 0.12);
+
+    /* 文字 */
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.4);
+
+    /* 阴影 */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+
+    /* 圆角 */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+
+    /* 间距 */
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+
+    /* 过渡 */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+    --transition-slow: 0.4s ease;
+}
+
+/* ============== 基础重置 ============== */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ============== 背景装饰 ============== */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ============== 应用容器 ============== */
+.app-container {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============== 导航栏 ============== */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-xl);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.logo {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+}
+
+.brand-text h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.brand-text .version {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 100px;
+    transition: var(--transition-normal);
+}
+
+.status-badge.connected {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--danger);
+    box-shadow: 0 0 8px var(--danger);
+    animation: pulse 2s infinite;
+}
+
+.status-badge.connected .status-dot {
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+}
+
+.status-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* ============== 主内容区 ============== */
+.main-content {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: var(--space-xl);
+    padding: var(--space-xl);
+    flex: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============== 面板 ============== */
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+/* ============== 卡片 ============== */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: var(--transition-normal);
+}
+
+.card:hover {
+    border-color: var(--border-light);
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.card-icon {
+    font-size: 1.25rem;
+}
+
+.card-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    flex: 1;
+}
+
+.card-body {
+    padding: var(--space-lg);
+}
+
+/* ============== 设备连接卡片 ============== */
+.device-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+}
+
+.device-info-row .label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.device-info-row .value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.connection-actions {
+    display: flex;
+    gap: var(--space-md);
+}
+
+/* ============== 设备信息列表 ============== */
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.info-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.info-row.highlight {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.info-value {
+    font-weight: 600;
+    font-family: 'Fira Code', monospace;
+    color: var(--text-primary);
+}
+
+/* ============== 按钮 ============== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    white-space: nowrap;
+}
+
+.btn-icon {
+    font-size: 1.1em;
+}
+
+.btn-lg {
+    flex: 1;
+    padding: var(--space-md) var(--space-lg);
+}
+
+.btn-xl {
+    width: 100%;
+    padding: var(--space-lg);
+    font-size: 1rem;
+    border-radius: var(--radius-lg);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: var(--shadow-sm), 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md), 0 0 30px rgba(99, 102, 241, 0.4);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success), #059669);
+    color: white;
+    box-shadow: var(--shadow-sm), 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md), 0 0 30px rgba(16, 185, 129, 0.4);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-light);
+}
+
+.btn-outline:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-icon-only {
+    background: transparent;
+    border: none;
+    padding: var(--space-xs);
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: var(--transition-fast);
+}
+
+.btn-icon-only:hover {
+    opacity: 1;
+}
+
+/* ============== 文件拖放区 ============== */
+.file-drop-zone {
+    border: 2px dashed var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    margin-bottom: var(--space-lg);
+}
+
+.file-drop-zone:hover,
+.file-drop-zone.drag-over {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.file-drop-zone.has-file {
+    border-color: var(--success);
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.drop-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.drop-icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+.drop-title {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.drop-hint {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* ============== OTA 控制区 ============== */
+.ota-controls {
+    margin-bottom: var(--space-lg);
+}
+
+/* ============== 进度条 ============== */
+.progress-wrapper {
+    padding: var(--space-md);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+}
+
+.progress-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.progress-percent {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-light);
+    font-family: 'Fira Code', monospace;
+}
+
+.progress-track {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--success));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* ============== 日志区域 ============== */
+.card-log {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-log .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.log-scroll {
+    flex: 1;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: var(--space-md);
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.log-entry {
+    padding: var(--space-xs) 0;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    word-break: break-all;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.log-entry.log-info {
+    color: var(--text-muted);
+}
+
+.log-entry.log-success {
+    color: var(--success);
+}
+
+.log-entry.log-error {
+    color: var(--danger);
+}
+
+/* ============== 滚动条 ============== */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* ============== 响应式 ============== */
+@media (max-width: 768px) {
+    .navbar {
+        padding: var(--space-md);
+    }
+
+    .brand-text h1 {
+        font-size: 1.25rem;
+    }
+
+    .main-content {
+        padding: var(--space-md);
+    }
+
+    .card-body {
+        padding: var(--space-md);
+    }
+}
+
+/* ============== 工具类 ============== */
+.hidden {
+    display: none !important;
+}

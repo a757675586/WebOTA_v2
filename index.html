@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Web BLE OTA - 蓝牙固件升级工具">
+    <title>Web BLE OTA - 蓝牙固件升级</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- 顶部导航栏 -->
+        <header class="navbar">
+            <div class="navbar-brand">
+                <span class="logo">⚡</span>
+                <div class="brand-text">
+                    <h1>Web BLE OTA</h1>
+                    <span class="version">v1.0.0</span>
+                </div>
+            </div>
+            <div class="navbar-status">
+                <div class="status-badge" id="statusBadge">
+                    <span class="status-dot"></span>
+                    <span class="status-label" id="connectionStatus">未连接</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 左侧面板 -->
+            <section class="panel panel-left">
+                <!-- 设备连接卡片 -->
+                <div class="card card-connection">
+                    <div class="card-header">
+                        <div class="card-icon">📡</div>
+                        <h2>设备连接</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="device-info-row">
+                            <span class="label">设备名称</span>
+                            <span class="value" id="deviceName">未选择</span>
+                        </div>
+                        <div class="connection-actions">
+                            <button class="btn btn-primary btn-lg" id="btnScan">
+                                <span class="btn-icon">🔍</span>
+                                扫描设备
+                            </button>
+                            <button class="btn btn-outline btn-lg" id="btnDisconnect" style="display: none;">
+                                <span class="btn-icon">⏏️</span>
+                                断开
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 设备信息卡片 -->
+                <div class="card card-info">
+                    <div class="card-header">
+                        <div class="card-icon">📋</div>
+                        <h2>设备信息</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-list">
+                            <div class="info-row">
+                                <span class="info-label">硬件版本</span>
+                                <span class="info-value" id="hwVersion">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">软件版本</span>
+                                <span class="info-value" id="swVersion">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">车型</span>
+                                <span class="info-value" id="carModel">-</span>
+                            </div>
+                            <div class="info-row highlight">
+                                <span class="info-label">MTU</span>
+                                <span class="info-value" id="mtuValue">-</span>
+                            </div>
+                            <div class="info-row highlight">
+                                <span class="info-label">OTA 帧大小</span>
+                                <span class="info-value" id="otaOffset">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 右侧面板 -->
+            <section class="panel panel-right">
+                <!-- OTA 升级卡片 -->
+                <div class="card card-ota">
+                    <div class="card-header">
+                        <div class="card-icon">🚀</div>
+                        <h2>固件升级</h2>
+                    </div>
+                    <div class="card-body">
+                        <!-- 文件选择区 -->
+                        <div class="file-drop-zone" id="fileDropZone">
+                            <input type="file" id="fileInput" accept=".bin" hidden>
+                            <div class="drop-content">
+                                <div class="drop-icon">📦</div>
+                                <div class="drop-text">
+                                    <span class="drop-title" id="fileName">拖放或点击选择固件</span>
+                                    <span class="drop-hint" id="fileSize">支持 .bin 格式</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 升级控制 -->
+                        <div class="ota-controls">
+                            <button class="btn btn-success btn-xl" id="btnUpgrade" disabled>
+                                <span class="btn-icon">⬆️</span>
+                                开始升级
+                            </button>
+                        </div>
+
+                        <!-- 进度显示 -->
+                        <div class="progress-wrapper">
+                            <div class="progress-info">
+                                <span class="progress-label" id="upgradeStatus">等待中</span>
+                                <span class="progress-percent" id="progressText">0%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" id="progressBar"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 日志卡片 -->
+                <div class="card card-log">
+                    <div class="card-header">
+                        <div class="card-icon">📝</div>
+                        <h2>操作日志</h2>
+                        <button class="btn-icon-only" id="btnClearLog" title="清空日志">🗑️</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="log-scroll" id="logContainer">
+                            <div class="log-entry log-info">应用已就绪，请扫描设备开始连接</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JavaScript 模块 -->
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

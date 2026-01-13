@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CarLight Web - 车载氛围灯控制系统">
+    <title>CarLight - 氛围灯控制</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/ambient.css">
+</head>
+
+<body>
+    <div class="ambient-app">
+        <!-- 顶部导航栏 -->
+        <header class="ambient-navbar">
+            <div class="brand">
+                <span class="logo">💡</span>
+                <div class="brand-text">
+                    <h1>CarLight</h1>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <div class="status-badge" id="statusBadge">
+                    <span class="status-dot"></span>
+                    <span class="status-label" id="connectionStatus">未连接</span>
+                </div>
+                <button class="btn btn-outline" id="btnDeviceInfo" style="display: none;">
+                    <span class="btn-icon">ℹ️</span>
+                    设备信息
+                </button>
+                <button class="btn btn-primary" id="btnScan">
+                    <span class="btn-icon">🔍</span>
+                    扫描设备
+                </button>
+            </div>
+        </header>
+
+        <div class="ambient-container">
+            <!-- 模式切换 Tabs -->
+            <div class="mode-tabs" id="modeTabs">
+                <button class="mode-tab active" data-mode="single">
+                    <span class="mode-tab-icon">🎨</span>
+                    <span>单色模式</span>
+                </button>
+                <button class="mode-tab" data-mode="multi">
+                    <span class="mode-tab-icon">🌈</span>
+                    <span>多色模式</span>
+                </button>
+                <button class="mode-tab" data-mode="dynamic">
+                    <span class="mode-tab-icon">🎵</span>
+                    <span>律动模式</span>
+                </button>
+            </div>
+
+            <main class="ambient-main">
+                <!-- 左侧边栏 -->
+                <aside class="ambient-sidebar">
+                    <!-- 设备连接卡片 -->
+                    <div class="card card-glass">
+                        <div class="card-header">
+                            <div class="card-icon">📡</div>
+                            <h2>设备连接</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="device-card" id="deviceCard">
+                                <div class="device-icon">📱</div>
+                                <div class="device-info">
+                                    <div class="device-name" id="deviceName">未选择设备</div>
+                                    <div class="device-status" id="deviceStatus">请扫描并连接设备</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline btn-lg" id="btnDisconnect" style="display: none;">
+                                <span class="btn-icon">⏏️</span>
+                                断开连接
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 灯光设置卡片 -->
+                    <div class="card card-glass">
+                        <div class="card-header">
+                            <div class="card-icon">💡</div>
+                            <h2>灯光设置</h2>
+                        </div>
+                        <div class="card-body">
+                            <!-- 亮度模式切换 -->
+                            <div class="flex justify-between items-center">
+                                <span class="info-label">亮度调节</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="zoneMode">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="text-muted" style="font-size: var(--font-size-xs);">
+                                <span id="zoneModeLabel">统一调节</span>
+                            </div>
+
+                            <!-- 统一亮度 -->
+                            <div class="zone-controls" id="unifiedZone">
+                                <div class="slider-container">
+                                    <span class="slider-label">总亮度</span>
+                                    <input type="range" id="brightnessTotal" min="0" max="10" value="5">
+                                    <span class="slider-value" id="brightnessTotalValue">5</span>
+                                </div>
+                            </div>
+
+                            <!-- 区域亮度 -->
+                            <div class="zone-controls hidden" id="zoneControls">
+                                <div class="zone-item">
+                                    <div class="zone-header">
+                                        <span class="zone-name">区域一</span>
+                                        <span class="zone-value" id="zone1Value">5</span>
+                                    </div>
+                                    <input type="range" id="brightnessZone1" min="0" max="10" value="5">
+                                </div>
+                                <div class="zone-item">
+                                    <div class="zone-header">
+                                        <span class="zone-name">区域二</span>
+                                        <span class="zone-value" id="zone2Value">5</span>
+                                    </div>
+                                    <input type="range" id="brightnessZone2" min="0" max="10" value="5">
+                                </div>
+                                <div class="zone-item">
+                                    <div class="zone-header">
+                                        <span class="zone-name">区域三</span>
+                                        <span class="zone-value" id="zone3Value">5</span>
+                                    </div>
+                                    <input type="range" id="brightnessZone3" min="0" max="10" value="5">
+                                </div>
+                            </div>
+
+                            <!-- 开关控制 -->
+                            <div class="section-title mt-lg">开关控制</div>
+                            <div class="switch-group" id="switchControl">
+                                <button class="switch-option" data-switch="0">关闭</button>
+                                <button class="switch-option active" data-switch="1">打开</button>
+                                <button class="switch-option" data-switch="2">跟随车灯</button>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- 主内容区 -->
+                <div class="ambient-content">
+                    <!-- 单色模式面板 -->
+                    <div class="card card-glass" id="singleColorPanel">
+                        <div class="card-header">
+                            <div class="card-icon">🎨</div>
+                            <h2>RGB 颜色控制</h2>
+                        </div>
+                        <div class="card-body">
+                            <!-- 颜色选择器 -->
+                            <div class="section-title">颜色选择</div>
+                            <div class="color-picker-wrapper">
+                                <canvas id="colorPickerCanvas" class="color-picker-canvas"></canvas>
+                                <div class="color-picker-indicator" id="colorIndicator"></div>
+                            </div>
+                            <div class="color-preview">
+                                <div class="color-preview-swatch" id="colorPreview"></div>
+                                <div class="color-preview-info">
+                                    <div class="label">当前颜色</div>
+                                    <div class="value" id="colorHexValue">#FF0000</div>
+                                </div>
+                                <button class="btn btn-primary" id="btnApplyColor">
+                                    应用颜色
+                                </button>
+                            </div>
+
+                            <!-- 预设颜色 -->
+                            <div class="preset-colors-header mt-lg">
+                                <span class="title">常用颜色</span>
+                                <div class="actions">
+                                    <button class="action-btn" id="btnAddColor">+ 添加</button>
+                                    <button class="action-btn" id="btnEditColors">编辑</button>
+                                </div>
+                            </div>
+                            <div class="color-grid" id="presetColors">
+                                <!-- 预设颜色将由 JS 动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 多色模式面板 (默认隐藏) -->
+                    <div class="card card-glass hidden" id="multiColorPanel">
+                        <div class="card-header">
+                            <div class="card-icon">🌈</div>
+                            <h2>多色 RGB 控制</h2>
+                        </div>
+                        <div class="card-body">
+                            <!-- 模式切换 -->
+                            <div class="flex justify-between items-center">
+                                <span class="info-label">工作模式</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="dynamicToggle">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="text-muted" style="font-size: var(--font-size-xs);">
+                                <span id="dynamicModeLabel">静态模式</span>
+                            </div>
+
+                            <!-- 预设多色方案 -->
+                            <div class="section-title mt-lg">预设方案</div>
+                            <div class="color-grid" id="multiPresets">
+                                <!-- 多色预设将由 JS 动态生成 -->
+                            </div>
+
+                            <!-- 通道颜色控制 -->
+                            <div class="section-title mt-lg">通道颜色</div>
+                            <div class="flex justify-between items-center mb-md">
+                                <span class="info-label">DIY 通道</span>
+                                <label class="switch">
+                                    <input type="checkbox" id="syncToggle" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                            <div class="text-muted mb-md" style="font-size: var(--font-size-xs);">
+                                <span id="syncModeLabel">同步模式</span>
+                            </div>
+
+                            <!-- 同步模式: 所有通道 -->
+                            <div id="syncChannels">
+                                <div class="channel-section">
+                                    <div class="channel-header">
+                                        <span class="channel-name">通道 1、2、3 颜色</span>
+                                    </div>
+                                    <div class="channel-colors" id="channelAllColors">
+                                        <!-- 颜色将由 JS 动态生成 -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 独立模式: 分开通道 -->
+                            <div id="separateChannels" class="hidden">
+                                <div class="channel-section mb-md">
+                                    <div class="channel-header">
+                                        <span class="channel-name">通道一颜色</span>
+                                    </div>
+                                    <div class="channel-colors" id="channel1Colors"></div>
+                                </div>
+                                <div class="channel-section mb-md">
+                                    <div class="channel-header">
+                                        <span class="channel-name">通道二颜色</span>
+                                    </div>
+                                    <div class="channel-colors" id="channel2Colors"></div>
+                                </div>
+                                <div class="channel-section">
+                                    <div class="channel-header">
+                                        <span class="channel-name">通道三颜色</span>
+                                    </div>
+                                    <div class="channel-colors" id="channel3Colors"></div>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="flex gap-md mt-lg" style="justify-content: center;">
+                                <button class="btn btn-outline" id="btnClearMulti">清除颜色</button>
+                                <button class="btn btn-primary" id="btnApplyMulti">应用</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 律动模式面板 (默认隐藏) -->
+                    <div class="card card-glass hidden" id="dynamicPanel">
+                        <div class="card-header">
+                            <div class="card-icon">🎵</div>
+                            <h2>律动模式</h2>
+                        </div>
+                        <div class="card-body">
+                            <!-- 律动预设 -->
+                            <div class="section-title">律动效果</div>
+                            <div class="color-grid" id="dynamicPresets"
+                                style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">
+                                <!-- 律动预设将由 JS 动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- 底部导航 -->
+        <nav class="ambient-footer">
+            <a href="index.html" class="btn btn-outline">
+                <span class="btn-icon">⬆️</span>
+                OTA 升级
+            </a>
+            <button class="btn btn-outline" id="btnFactory">
+                <span class="btn-icon">🏭</span>
+                工厂模式
+            </button>
+            <button class="btn btn-outline" id="btnAbout">
+                <span class="btn-icon">ℹ️</span>
+                关于
+            </button>
+        </nav>
+    </div>
+
+    <!-- 设备信息弹窗 -->
+    <div class="loading-overlay hidden" id="deviceInfoModal">
+        <div class="card" style="width: 400px; max-width: 90vw;">
+            <div class="card-header">
+                <div class="card-icon">📋</div>
+                <h2>设备信息</h2>
+                <button class="btn btn-outline" id="btnCloseInfo" style="margin-left: auto;">✕</button>
+            </div>
+            <div class="card-body">
+                <div class="info-list">
+                    <div class="info-row">
+                        <span class="info-label">车型</span>
+                        <span class="info-value" id="infoCarModel">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">设备地址</span>
+                        <span class="info-value" id="infoAddress">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">固件版本</span>
+                        <span class="info-value" id="infoFirmware">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">硬件版本</span>
+                        <span class="info-value" id="infoHardware">-</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-lg mt-lg" id="btnEnterFactory" style="width: 100%;">
+                    <span class="btn-icon">🏭</span>
+                    进入工厂模式
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 模块 -->
+    <script type="module" src="js/AmbientLightApp.js"></script>
+</body>
+
+</html>
