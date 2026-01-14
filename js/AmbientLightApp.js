@@ -491,17 +491,27 @@ class AmbientLightApp {
      * 应用工厂配置到 UI
      */
     applyFactoryConfig(config) {
-        // 更新 LED 区域配置
-        if (this.ledZones && config.zones) {
-            config.zones.forEach((zone, i) => {
-                if (this.ledZones[i]) {
-                    this.ledZones[i].count = zone.count;
-                    this.ledZones[i].ltr = zone.ltr;
-                }
-            });
-            // 重新渲染 LED 网格
-            this.renderLedConfigGrid();
-        }
+        // 初始化 LED 区域配置 (带名称和图标)
+        const zoneDefaults = [
+            { name: '主驾', icon: '🚗' },
+            { name: '副驾', icon: '🚗' },
+            { name: '左前', icon: '⬅️' },
+            { name: '右前', icon: '➡️' },
+            { name: '左后', icon: '⬅️' },
+            { name: '右后', icon: '➡️' }
+        ];
+
+        // 合并设备返回的数据和默认名称/图标
+        this.ledZones = config.zones.map((zone, i) => ({
+            ...zoneDefaults[i],
+            count: zone.count,
+            ltr: zone.ltr
+        }));
+
+        this.log(`LED 区域数据已更新: ${JSON.stringify(this.ledZones)}`);
+
+        // 重新渲染 LED 网格
+        this.renderLedConfigGrid();
 
         // 更新音源选择
         const micRadio = document.querySelector('input[name="soundSource"][value="mic"]');
@@ -970,15 +980,17 @@ class AmbientLightApp {
     renderLedConfigGrid() {
         if (!this.ledConfigGrid) return;
 
-        // LED 区域配置数据
-        this.ledZones = [
-            { name: '主驾', icon: '🚗', count: 12, ltr: true },
-            { name: '副驾', icon: '🚗', count: 12, ltr: true },
-            { name: '左前', icon: '⬅️', count: 8, ltr: true },
-            { name: '右前', icon: '➡️', count: 8, ltr: false },
-            { name: '左后', icon: '⬅️', count: 6, ltr: true },
-            { name: '右后', icon: '➡️', count: 6, ltr: false }
-        ];
+        // LED 区域配置数据 (只在首次初始化时设置默认值)
+        if (!this.ledZones || this.ledZones.length === 0) {
+            this.ledZones = [
+                { name: '主驾', icon: '🚗', count: 0, ltr: true },
+                { name: '副驾', icon: '🚗', count: 0, ltr: true },
+                { name: '左前', icon: '⬅️', count: 0, ltr: true },
+                { name: '右前', icon: '➡️', count: 0, ltr: false },
+                { name: '左后', icon: '⬅️', count: 0, ltr: true },
+                { name: '右后', icon: '➡️', count: 0, ltr: false }
+            ];
+        }
 
         this.ledConfigGrid.innerHTML = this.ledZones.map((zone, index) => `
             <div class="led-config-item" data-zone="${index}">
