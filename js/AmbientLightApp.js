@@ -1356,28 +1356,6 @@ class AmbientLightApp {
         }
     }
 
-    initLightController() {
-        // 灯光控制初始化 (亮度/速度等)
-        const brightnessSlider = document.getElementById('brightnessSlider');
-        if (brightnessSlider) {
-            brightnessSlider.addEventListener('input', (e) => {
-                const val = parseInt(e.target.value);
-                this.protocol.setBrightness(val);
-                this.log(`亮度: ${val}`);
-            });
-        }
-
-        // 速度控制
-        const speedSlider = document.getElementById('speedSlider');
-        if (speedSlider) {
-            speedSlider.addEventListener('input', (e) => {
-                const val = parseInt(e.target.value);
-                this.protocol.setSpeed(val);
-                this.log(`速度: ${val}`);
-            });
-        }
-    }
-
     renderLedConfigGrid() {
         if (!this.ledConfigGrid) return;
 
