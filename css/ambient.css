@@ -306,42 +306,26 @@
 }
 
 .color-swatch.active::after {
-    content: '✓';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    color: white;
-    font-weight: 800;
-    font-size: 22px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    background: rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-lg);
-    backdrop-filter: blur(1px);
-}
-
-.color-swatch-add {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: var(--text-secondary);
-    background: var(--bg-secondary);
-    border: 2px dashed var(--glass-border);
-}
-
-.color-swatch-add:hover {
-    color: var(--primary);
-    border-color: var(--primary);
-    background: var(--bg-elevated);
+    content: '';
+    display: none;
 }
 
 .preset-name {
-    display: none;
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    padding: 2px;
+    word-break: break-all;
+    line-height: 1.2;
+    pointer-events: none;
 }
 
 .switch-card {
