@@ -207,6 +207,21 @@ class BleService {
                 }
                 return;
             }
+
+            // CAN 帧响应 (0xDB) - 直接转发原始二进制数据
+            if (cmd === 0xDB) {
+                this.log(`收到 CAN 帧响应: ${hexStr}`);
+                if (this.onDataReceived) {
+                    this.onDataReceived(bytes, { type: 'can_frame', raw: bytes });
+                }
+                return;
+            }
+
+            // 其他 0xFF 开头的二进制响应也直接转发
+            if (this.onDataReceived) {
+                this.onDataReceived(bytes, { type: 'binary', raw: bytes });
+            }
+            return;
         }
 
         // 尝试解析为文本响应
