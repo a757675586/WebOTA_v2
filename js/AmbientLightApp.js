@@ -73,7 +73,6 @@ class AmbientLightApp {
         // 导航栏
         this.btnScan = document.getElementById('btnScan');
         this.btnDisconnect = document.getElementById('btnDisconnect');
-        this.btnDeviceInfo = document.getElementById('btnDeviceInfo');
         this.statusBadge = document.getElementById('statusBadge');
         this.connectionStatus = document.getElementById('connectionStatus');
         this.deviceName = document.getElementById('deviceName');
@@ -108,12 +107,8 @@ class AmbientLightApp {
         this.btnClearMulti = document.getElementById('btnClearMulti');
         this.btnApplyMulti = document.getElementById('btnApplyMulti');
 
-        // 设备信息弹窗
-        this.deviceInfoModal = document.getElementById('deviceInfoModal');
-        this.btnCloseInfo = document.getElementById('btnCloseInfo');
-        this.btnEnterFactory = document.getElementById('btnEnterFactory');
+        // 设备信息弹窗相关元素已移除
         this.btnFactory = document.getElementById('btnFactory');
-        this.btnAbout = document.getElementById('btnAbout');
     }
 
     initColorPicker() {
@@ -160,7 +155,7 @@ class AmbientLightApp {
         // 同步模式切换
         this.syncToggle?.addEventListener('change', (e) => {
             const isSync = e.target.checked;
-            this.syncModeLabel.textContent = isSync ? '同步模式' : '独立模式';
+            // Label now static in switch-card
             this.syncChannels.classList.toggle('hidden', !isSync);
             this.separateChannels.classList.toggle('hidden', isSync);
             this.protocol.setSyncMode(isSync);
@@ -170,19 +165,15 @@ class AmbientLightApp {
         // 动态/静态模式切换
         this.dynamicToggle?.addEventListener('change', (e) => {
             const isDynamic = e.target.checked;
-            this.dynamicModeLabel.textContent = isDynamic ? '动态模式' : '静态模式';
+            // Label now static in switch-card
             this.log(`切换模式: ${isDynamic ? '动态' : '静态'}`);
             this.protocol.setDynamicMode(isDynamic);
         });
 
-        // 设备信息
-        this.btnDeviceInfo?.addEventListener('click', () => this.showDeviceInfo());
-        this.btnAbout?.addEventListener('click', () => this.showDeviceInfo());
-        this.btnCloseInfo?.addEventListener('click', () => this.hideDeviceInfo());
+        // 设备信息相关事件已移除
 
         // 工厂模式
         this.btnFactory?.addEventListener('click', () => this.enterFactoryMode());
-        this.btnEnterFactory?.addEventListener('click', () => this.enterFactoryMode());
 
         // 多色模式按钮
         this.btnClearMulti?.addEventListener('click', () => this.clearMultiColors());
@@ -248,7 +239,6 @@ class AmbientLightApp {
 
         this.btnScan.style.display = 'none';
         this.btnDisconnect.style.display = 'flex';
-        this.btnDeviceInfo.style.display = 'flex';
 
         this.log('设备已连接: ' + (device?.name || '未知'));
 
@@ -276,7 +266,6 @@ class AmbientLightApp {
 
         this.btnScan.style.display = 'flex';
         this.btnDisconnect.style.display = 'none';
-        this.btnDeviceInfo.style.display = 'none';
 
         this.log('设备已断开');
     }
@@ -565,14 +554,7 @@ class AmbientLightApp {
         this.protocol.setDynamicEffect(preset.id);
     }
 
-    // ============ 设备信息 ============
-
-    showDeviceInfo() {
-        if (this.deviceInfoModal) {
-            this.deviceInfoModal.classList.remove('hidden');
-            this.updateDeviceInfoUI();
-        }
-    }
+    // ============ 设备信息 UI 更新 ============
 
     updateDeviceInfoUI() {
         if (!this.deviceInfo) return;
@@ -582,26 +564,10 @@ class AmbientLightApp {
             if (el) el.textContent = text || '-';
         };
 
-        setSafeText('infoCarModel', this.deviceInfo.carModel);
-        setSafeText('infoAddress', this.deviceInfo.address || this.deviceInfo.name);
-        setSafeText('infoFirmware', this.deviceInfo.swVersion || this.deviceInfo.firmware); // 兼容 swVersion 和 firmware 字段
-        setSafeText('infoHardware', this.deviceInfo.hwVersion || this.deviceInfo.hardware); // 兼容 hwVersion 和 hardware 字段
-
-        // 更新侧边栏直接显示的详细信息
+        // 更新侧边栏 directly
         setSafeText('detailCarModel', this.deviceInfo.carModel);
         setSafeText('detailHwVersion', this.deviceInfo.hwVersion || this.deviceInfo.hardware);
         setSafeText('detailSwVersion', this.deviceInfo.swVersion || this.deviceInfo.firmware);
-
-        // 同时更新 OTA 面板的信息 (如果存在)
-        setSafeText('hwVersion', this.deviceInfo.hwVersion || this.deviceInfo.hardware);
-        setSafeText('swVersion', this.deviceInfo.swVersion || this.deviceInfo.firmware);
-        setSafeText('carModel', this.deviceInfo.carModel);
-    }
-
-    hideDeviceInfo() {
-        if (this.deviceInfoModal) {
-            this.deviceInfoModal.classList.add('hidden');
-        }
     }
 
     enterFactoryMode() {

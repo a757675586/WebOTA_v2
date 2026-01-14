@@ -31,11 +31,7 @@
                 <div class="status-badge" id="statusBadge">
                     <span class="status-dot"></span>
                     <span class="status-label" id="connectionStatus">未连接</span>
-                </div>
-                <button class="btn btn-outline" id="btnDeviceInfo" style="display: none;">
-                    <span class="btn-icon">ℹ️</span>
-                    设备信息
-                </button>
+                </div>>
                 <button class="btn btn-primary" id="btnScan">
                     <span class="btn-icon">🔍</span>
                     扫描设备
@@ -108,15 +104,13 @@
                         </div>
                         <div class="card-body">
                             <!-- 亮度模式切换 -->
-                            <div class="flex justify-between items-center">
-                                <span class="info-label">亮度调节</span>
+                            <!-- 亮度模式切换 (Switch Card Style) -->
+                            <div class="switch-card">
+                                <span class="switch-card-label" id="zoneModeLabel">区域亮度</span>
                                 <label class="switch">
                                     <input type="checkbox" id="zoneMode">
                                     <span class="switch-slider"></span>
                                 </label>
-                            </div>
-                            <div class="text-muted" style="font-size: var(--font-size-xs);">
-                                <span id="zoneModeLabel">统一调节</span>
                             </div>
 
                             <!-- 统一亮度 -->
@@ -212,15 +206,13 @@
                         </div>
                         <div class="card-body">
                             <!-- 模式切换 -->
-                            <div class="flex justify-between items-center">
-                                <span class="info-label">工作模式</span>
+                            <!-- 模式切换 (Switch Card Style) -->
+                            <div class="switch-card">
+                                <span class="switch-card-label" id="dynamicModeLabel">动态模式</span>
                                 <label class="switch">
                                     <input type="checkbox" id="dynamicToggle">
                                     <span class="switch-slider"></span>
                                 </label>
-                            </div>
-                            <div class="text-muted" style="font-size: var(--font-size-xs);">
-                                <span id="dynamicModeLabel">静态模式</span>
                             </div>
 
                             <!-- 预设多色方案 -->
@@ -231,15 +223,14 @@
 
                             <!-- 通道颜色控制 -->
                             <div class="section-title mt-lg">通道颜色</div>
-                            <div class="flex justify-between items-center mb-md">
-                                <span class="info-label">DIY 通道</span>
+
+                            <!-- 同步模式切换 (Switch Card Style) -->
+                            <div class="switch-card mb-md">
+                                <span class="switch-card-label" id="syncModeLabel">同步模式</span>
                                 <label class="switch">
                                     <input type="checkbox" id="syncToggle" checked>
                                     <span class="switch-slider"></span>
                                 </label>
-                            </div>
-                            <div class="text-muted mb-md" style="font-size: var(--font-size-xs);">
-                                <span id="syncModeLabel">同步模式</span>
                             </div>
 
                             <!-- 同步模式: 所有通道 -->
@@ -313,47 +304,10 @@
                 <span class="btn-icon">🏭</span>
                 工厂模式
             </button>
-            <button class="btn btn-outline" id="btnAbout">
-                <span class="btn-icon">ℹ️</span>
-                关于
-            </button>
         </nav>
     </div>
 
-    <!-- 设备信息弹窗 -->
-    <div class="loading-overlay hidden" id="deviceInfoModal">
-        <div class="card" style="width: 400px; max-width: 90vw;">
-            <div class="card-header">
-                <div class="card-icon">📋</div>
-                <h2>设备信息</h2>
-                <button class="btn btn-outline" id="btnCloseInfo" style="margin-left: auto;">✕</button>
-            </div>
-            <div class="card-body">
-                <div class="info-list">
-                    <div class="info-row">
-                        <span class="info-label">车型</span>
-                        <span class="info-value" id="infoCarModel">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">设备地址</span>
-                        <span class="info-value" id="infoAddress">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">固件版本</span>
-                        <span class="info-value" id="infoFirmware">-</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">硬件版本</span>
-                        <span class="info-value" id="infoHardware">-</span>
-                    </div>
-                </div>
-                <button class="btn btn-primary btn-lg mt-lg" id="btnEnterFactory" style="width: 100%;">
-                    <span class="btn-icon">🏭</span>
-                    进入工厂模式
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- 设备信息弹窗已移除 -->
 
     <!-- JavaScript 模块 -->
     <script type="module" src="js/AmbientLightApp.js"></script>
