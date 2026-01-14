@@ -421,6 +421,11 @@ export class AmbientProtocol {
         return this.send(cmdFactoryMode(false));
     }
 
+    /** 读取工厂配置 */
+    async readFactoryConfig() {
+        return this.send(cmdQueryModuleInfo());  // <FC0102>
+    }
+
     /** 恢复出厂设置 */
     async factoryReset() {
         return this.send(cmdFactoryReset());

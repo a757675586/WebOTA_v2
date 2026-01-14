@@ -399,7 +399,120 @@ class AmbientLightApp {
 
     onDataReceived(data) {
         console.log('[AmbientLightApp] 收到数据:', data);
-        // 处理设备返回的数据
+
+        // 将 ArrayBuffer/Uint8Array 转为字符串
+        let text = '';
+        if (data instanceof ArrayBuffer) {
+            text = new TextDecoder().decode(data);
+        } else if (data instanceof Uint8Array) {
+            text = new TextDecoder().decode(data);
+        } else if (typeof data === 'string') {
+            text = data;
+        }
+
+        // 解析工厂配置响应 <FD...>
+        if (text.startsWith('<FD') && this.isFactoryMode) {
+            this.parseFactoryConfig(text);
+        }
+    }
+
+    /**
+     * 解析工厂配置响应
+     * 格式: <FD{LENGTH}{DATA...}>
+     * DATA 格式 (每个 2 字符 hex):
+     *   - numZj, ltrZj (主驾灯数, 方向)
+     *   - numFj, ltrFj (副驾灯数, 方向)
+     *   - numZqm, ltrZqm (左前门灯数, 方向)
+     *   - numYqm, ltrYqm (右前门灯数, 方向)
+     *   - numZhm, ltrZhm (左后门灯数, 方向)
+     *   - numYhm, ltrYhm (右后门灯数, 方向)
+     *   - isMic (音源: 0=麦克风, 1=原车)
+     *   - dynamicDang (灵敏度 1-5)
+     *   - yb, cm, cs, zx, kt, clpz (高级功能开关)
+     */
+    parseFactoryConfig(text) {
+        try {
+            const length = parseInt(text.substring(3, 5), 16);
+            if (text.length < (length + 3) * 2) {
+                this.log('工厂配置数据不完整', 'warning');
+                return;
+            }
+
+            let index = 5;
+            const readByte = () => {
+                const val = parseInt(text.substring(index, index + 2), 16);
+                index += 2;
+                return val;
+            };
+
+            // 解析 LED 配置
+            const config = {
+                zones: [
+                    { count: readByte(), ltr: readByte() === 0 }, // 主驾
+                    { count: readByte(), ltr: readByte() === 0 }, // 副驾
+                    { count: readByte(), ltr: readByte() === 0 }, // 左前
+                    { count: readByte(), ltr: readByte() === 0 }, // 右前
+                    { count: readByte(), ltr: readByte() === 0 }, // 左后
+                    { count: readByte(), ltr: readByte() === 0 }, // 右后
+                ],
+                isMic: readByte() === 0,
+                sensitivity: readByte(),
+                features: {
+                    welcome: readByte() === 1,
+                    door: readByte() === 1,
+                    speed: readByte() === 1,
+                    turn: readByte() === 1,
+                    ac: readByte() === 1,
+                    crash: readByte() === 1
+                }
+            };
+
+            this.log('收到工厂配置: ' + JSON.stringify(config));
+            this.applyFactoryConfig(config);
+
+        } catch (e) {
+            console.error('[AmbientLightApp] 解析工厂配置失败:', e);
+        }
+    }
+
+    /**
+     * 应用工厂配置到 UI
+     */
+    applyFactoryConfig(config) {
+        // 更新 LED 区域配置
+        if (this.ledZones && config.zones) {
+            config.zones.forEach((zone, i) => {
+                if (this.ledZones[i]) {
+                    this.ledZones[i].count = zone.count;
+                    this.ledZones[i].ltr = zone.ltr;
+                }
+            });
+            // 重新渲染 LED 网格
+            this.renderLedConfigGrid();
+        }
+
+        // 更新音源选择
+        const micRadio = document.querySelector('input[name="soundSource"][value="mic"]');
+        const speakerRadio = document.querySelector('input[name="soundSource"][value="speaker"]');
+        if (micRadio) micRadio.checked = config.isMic;
+        if (speakerRadio) speakerRadio.checked = !config.isMic;
+
+        // 更新灵敏度
+        if (this.sensitivityLevels) {
+            this.sensitivityLevels.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.level) === config.sensitivity);
+            });
+        }
+
+        // 更新高级功能开关
+        if (this.featureWelcome) this.featureWelcome.checked = config.features.welcome;
+        if (this.featureDoor) this.featureDoor.checked = config.features.door;
+        if (this.featureSpeed) this.featureSpeed.checked = config.features.speed;
+        if (this.featureTurn) this.featureTurn.checked = config.features.turn;
+        if (this.featureAC) this.featureAC.checked = config.features.ac;
+        if (this.featureCrash) this.featureCrash.checked = config.features.crash;
+
+        this.log('工厂配置已应用到 UI');
     }
 
     // ============ 模式切换 ============
@@ -711,7 +824,7 @@ class AmbientLightApp {
         setSafeText('detailSwVersion', this.deviceInfo.swVersion || this.deviceInfo.firmware);
     }
 
-    enterFactoryMode() {
+    async enterFactoryMode() {
         // 显示工厂模式面板，隐藏其他面板
         this.singleColorPanel?.classList.add('hidden');
         this.multiColorPanel?.classList.add('hidden');
@@ -723,6 +836,16 @@ class AmbientLightApp {
 
         this.isFactoryMode = true;
         this.log('进入工厂模式');
+
+        // 发送进入工厂模式命令
+        await this.protocol.enterFactoryMode();
+
+        // 延迟后请求读取配置
+        await this.delay(200);
+
+        // 发送读取配置命令 <FC0102>
+        await this.protocol.readFactoryConfig();
+        this.log('请求读取工厂配置...');
 
         // 渲染 LED 配置网格
         this.renderLedConfigGrid();
