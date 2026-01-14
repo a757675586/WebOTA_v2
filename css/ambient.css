@@ -300,8 +300,8 @@
 
 .color-swatch.active {
     border-color: #ffffff;
-    box-shadow: 0 0 0 2px var(--primary), 0 0 15px var(--primary-glow);
-    transform: scale(1.1);
+    box-shadow: 0 0 0 2px var(--primary), 0 0 30px var(--primary-glow);
+    transform: scale(1.15);
     z-index: 10;
 }
 
