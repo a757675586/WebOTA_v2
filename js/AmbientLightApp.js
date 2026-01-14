@@ -198,6 +198,9 @@ class AmbientLightApp {
         this.bleService.onDeviceInfo = (info) => {
             this.deviceInfo = { ...this.deviceInfo, ...info };
             console.log('[AmbientLightApp] 设备信息:', info);
+
+            // 收到信息时立即更新界面
+            this.updateDeviceInfoUI();
         };
     }
 
@@ -563,15 +566,27 @@ class AmbientLightApp {
     showDeviceInfo() {
         if (this.deviceInfoModal) {
             this.deviceInfoModal.classList.remove('hidden');
-
-            // 更新信息
-            if (this.deviceInfo) {
-                document.getElementById('infoCarModel').textContent = this.deviceInfo.carModel || '-';
-                document.getElementById('infoAddress').textContent = this.deviceInfo.address || '-';
-                document.getElementById('infoFirmware').textContent = this.deviceInfo.firmware || '-';
-                document.getElementById('infoHardware').textContent = this.deviceInfo.hardware || '-';
-            }
+            this.updateDeviceInfoUI();
         }
+    }
+
+    updateDeviceInfoUI() {
+        if (!this.deviceInfo) return;
+
+        const setSafeText = (id, text) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text || '-';
+        };
+
+        setSafeText('infoCarModel', this.deviceInfo.carModel);
+        setSafeText('infoAddress', this.deviceInfo.address || this.deviceInfo.name);
+        setSafeText('infoFirmware', this.deviceInfo.swVersion || this.deviceInfo.firmware); // 兼容 swVersion 和 firmware 字段
+        setSafeText('infoHardware', this.deviceInfo.hwVersion || this.deviceInfo.hardware); // 兼容 hwVersion 和 hardware 字段
+
+        // 同时更新 OTA 面板的信息 (如果存在)
+        setSafeText('hwVersion', this.deviceInfo.hwVersion || this.deviceInfo.hardware);
+        setSafeText('swVersion', this.deviceInfo.swVersion || this.deviceInfo.firmware);
+        setSafeText('carModel', this.deviceInfo.carModel);
     }
 
     hideDeviceInfo() {
