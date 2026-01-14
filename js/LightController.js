@@ -27,6 +27,8 @@ export class LightController {
     init() {
         this.bindElements();
         this.bindEvents();
+        this.loadState();
+        this.restoreUI();
     }
 
     bindElements() {
@@ -55,6 +57,7 @@ export class LightController {
         this.zoneModeSwitch?.addEventListener('change', (e) => {
             this.zoneMode = e.target.checked;
             this.updateZoneModeUI();
+            this.saveState();
         });
 
         // 统一亮度
@@ -66,6 +69,7 @@ export class LightController {
         this.brightnessTotal?.addEventListener('change', (e) => {
             // Zone 4 is Total/Unified zone in protocol
             this.sendBrightness(4, this.brightness.total);
+            this.saveState();
         });
 
         // 区域亮度
@@ -75,6 +79,7 @@ export class LightController {
         });
         this.brightnessZone1?.addEventListener('change', () => {
             this.sendBrightness(1, this.brightness.zone1);
+            this.saveState();
         });
 
         this.brightnessZone2?.addEventListener('input', (e) => {
@@ -83,6 +88,7 @@ export class LightController {
         });
         this.brightnessZone2?.addEventListener('change', () => {
             this.sendBrightness(2, this.brightness.zone2);
+            this.saveState();
         });
 
         this.brightnessZone3?.addEventListener('input', (e) => {
@@ -91,6 +97,7 @@ export class LightController {
         });
         this.brightnessZone3?.addEventListener('change', () => {
             this.sendBrightness(3, this.brightness.zone3);
+            this.saveState();
         });
 
         // 开关控制
@@ -129,6 +136,7 @@ export class LightController {
 
         // 发送开关命令
         this.sendSwitchState(state);
+        this.saveState();
     }
 
     // ============ BLE 命令发送 ============
@@ -204,6 +212,69 @@ export class LightController {
 
     isZoneMode() {
         return this.zoneMode;
+    }
+
+    // ============ 状态持久化 ============
+
+    loadState() {
+        try {
+            const saved = localStorage.getItem('ambientLightState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                if (state.brightness) this.brightness = { ...this.brightness, ...state.brightness };
+                if (state.switchState !== undefined) this.switchState = state.switchState;
+                if (state.zoneMode !== undefined) this.zoneMode = state.zoneMode;
+            }
+        } catch (e) {
+            console.error('[LightController] 加载状态失败:', e);
+        }
+    }
+
+    saveState() {
+        try {
+            const state = {
+                brightness: this.brightness,
+                switchState: this.switchState,
+                zoneMode: this.zoneMode
+            };
+            localStorage.setItem('ambientLightState', JSON.stringify(state));
+        } catch (e) {
+            console.error('[LightController] 保存状态失败:', e);
+        }
+    }
+
+    restoreUI() {
+        // 恢复区域模式 UI
+        if (this.zoneModeSwitch) this.zoneModeSwitch.checked = this.zoneMode;
+        this.updateZoneModeUI(); // 这会更新显示/隐藏区域
+
+        // 恢复亮度滑块 UI
+        if (this.brightnessTotal) {
+            this.brightnessTotal.value = this.brightness.total;
+            if (this.brightnessTotalValue) this.brightnessTotalValue.textContent = this.brightness.total;
+        }
+        if (this.brightnessZone1) {
+            this.brightnessZone1.value = this.brightness.zone1;
+            if (this.zone1Value) this.zone1Value.textContent = this.brightness.zone1;
+        }
+        if (this.brightnessZone2) {
+            this.brightnessZone2.value = this.brightness.zone2;
+            if (this.zone2Value) this.zone2Value.textContent = this.brightness.zone2;
+        }
+        if (this.brightnessZone3) {
+            this.brightnessZone3.value = this.brightness.zone3;
+            if (this.zone3Value) this.zone3Value.textContent = this.brightness.zone3;
+        }
+
+        // 恢复开关状态 UI
+        // 注意：这里不调用 setSwitchState 以避免在初始化时发送 BLE 命令（虽然发送也没关系，但只需更新 UI）
+        // 但我们需要更新按钮的 active 类
+        if (this.switchControl) {
+            const buttons = this.switchControl.querySelectorAll('.switch-option');
+            buttons.forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.switch) === this.switchState);
+            });
+        }
     }
 }
 
