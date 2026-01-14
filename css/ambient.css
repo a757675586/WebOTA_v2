@@ -310,6 +310,29 @@
     display: none;
 }
 
+.color-swatch-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    border: 2px dashed var(--glass-border);
+}
+
+.color-swatch-add:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: var(--bg-elevated);
+}
+
+/* Rectangular shape for Mode Presets (Multi/Dynamic) */
+#multiPresets .color-swatch,
+#dynamicPresets .color-swatch {
+    width: 86px;
+    border-radius: var(--radius-md);
+}
+
 .preset-name {
     display: block;
     position: absolute;
@@ -336,7 +359,6 @@
     align-items: center;
     padding: var(--space-md) var(--space-lg);
     background: var(--bg-elevated);
-    /* Lighter than card background */
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-sm);
@@ -377,184 +399,8 @@
     background: transparent;
     border: none;
     border-radius: var(--radius-lg);
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-xl);
-    background: var(--bg-card);
-    border-radius: var(--radius-md);
-}
-
-.device-info {
-    flex: 1;
-}
-
-.device-name {
-    font-weight: 500;
-    color: var(--text-primary);
-}
-
-.device-status {
-    font-size: var(--font-size-xs);
-    color: var(--text-muted);
-}
-
-/* ==========================================================================
-   Multi-Color Channel
-   ========================================================================== */
-.channel-section {
-    padding: var(--space-md);
-    background: var(--bg-secondary);
-    border-radius: var(--radius-md);
-}
-
-.channel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-md);
-}
-
-.channel-name {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-}
-
-.channel-colors {
-    display: flex;
-    gap: var(--space-sm);
-    min-height: 44px;
-    padding: var(--space-sm);
-    background: var(--bg-card);
-    border-radius: var(--radius-md);
-}
-
-.channel-color {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: transform var(--transition-fast);
-}
-
-.channel-color:hover {
-    transform: scale(1.1);
-}
-
-/* ==========================================================================
-   Factory Mode
-   ========================================================================== */
-.factory-section {
-    padding: var(--space-lg);
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    border-left: 4px solid var(--warning);
-}
-
-.factory-section .section-title {
-    color: var(--warning);
-}
-
-.factory-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--space-md);
-}
-
-.factory-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-md);
-    background: var(--bg-secondary);
-    border-radius: var(--radius-md);
-}
-
-.factory-item-label {
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-}
-
-.factory-item-value {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-}
-
-/* ==========================================================================
-   OTA Section (Enhanced)
-   ========================================================================== */
-.ota-mode-toggle {
-    display: flex;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-md);
-}
-
-.ota-mode-btn {
-    padding: var(--space-sm) var(--space-lg);
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-    background: var(--bg-secondary);
-    border: none;
-    border-radius: var(--radius-full);
     cursor: pointer;
     transition: all var(--transition-fast);
-}
-
-.ota-mode-btn.active {
-    color: white;
-    background: var(--primary);
-}
-
-/* ==========================================================================
-   Loading State
-   ========================================================================== */
-.loading-overlay {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: hsla(225, 25%, 8%, 0.9);
-    z-index: 1000;
-}
-
-.loading-spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid var(--bg-secondary);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* ==========================================================================
-   Empty State
-   ========================================================================== */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-2xl);
-    text-align: center;
-}
-
-.empty-state-icon {
-    font-size: 64px;
-    margin-bottom: var(--space-lg);
-    opacity: 0.5;
-}
-
-.empty-state-title {
-    font-size: var(--font-size-lg);
-    font-weight: 600;
 }
 
 .mode-tab-icon {
@@ -602,17 +448,7 @@
     border-top: 1px solid var(--glass-border);
     display: flex;
     flex-direction: column;
-    gap: var(--space-xs);
-}
-
-.device-details {
-    margin-top: var(--space-md);
-    padding-top: var(--space-md);
-    border-top: 1px solid var(--glass-border);
-    display: flex;
-    flex-direction: column;
     gap: var(--space-sm);
-    /* Increased gap for better readability */
 }
 
 .detail-row {
@@ -633,7 +469,6 @@
     background: var(--bg-secondary);
     padding: 2px 6px;
     border-radius: 4px;
-    /* Tag-like appearance */
 }
 
 /* ==========================================================================
@@ -799,7 +634,6 @@
     font-size: var(--font-size-sm);
     color: var(--text-muted);
     margin-bottom: var(--space-lg);
-}
 }
 
 /* ==========================================================================
