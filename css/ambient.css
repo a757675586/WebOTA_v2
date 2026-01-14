@@ -261,271 +261,56 @@
     padding: var(--space-sm) var(--space-md);
     text-align: center;
     font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-    background: transparent;
-    border: none;
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
 
-.switch-option:hover {
-    color: var(--text-primary);
-}
-
-.switch-option.active {
-    color: white;
-    background: var(--primary);
-    box-shadow: var(--shadow-sm);
-}
-
-/* ==========================================================================
-   Switch Card (New Design)
-   ========================================================================== */
-.switch-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-md) var(--space-lg);
-    background: var(--bg-elevated);
-    /* Lighter than card background */
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-sm);
-    transition: background var(--transition-fast);
-}
-
-.switch-card:hover {
-    background: var(--bg-elevated);
-}
-
-.switch-card-label {
-    font-size: var(--font-size-sm);
-    font-weight: 500;
-    color: var(--text-primary);
-}
-
-/* ==========================================================================
-   Mode Tabs
-   ========================================================================== */
-.mode-tabs {
-    display: flex;
-    gap: var(--space-sm);
-    padding: var(--space-sm);
-    background: var(--bg-card);
-    border-radius: var(--radius-xl);
-    margin-bottom: var(--space-lg);
-}
-
-.mode-tab {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-xs);
-    padding: var(--space-md);
-    font-size: var(--font-size-sm);
-    color: var(--text-secondary);
-    background: transparent;
-    border: none;
-    border-radius: var(--radius-lg);
-    cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.mode-tab-icon {
-    font-size: var(--font-size-xl);
-}
-
-.mode-tab:hover {
-    color: var(--text-primary);
-    background: var(--bg-elevated);
-}
-
-.mode-tab.active {
-    color: white;
-    background: linear-gradient(135deg, var(--primary), var(--accent-purple));
-
-    .device-icon {
-        width: 48px;
-        height: 48px;
+    .switch-card {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
-        font-size: var(--font-size-xl);
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
+        padding: var(--space-md) var(--space-lg);
+        background: var(--bg-elevated);
+        /* Lighter than card background */
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--space-sm);
+        transition: background var(--transition-fast);
     }
 
-    .device-info {
-        flex: 1;
+    .switch-card:hover {
+        background: var(--bg-elevated);
     }
 
-    .device-name {
+    .switch-card-label {
+        font-size: var(--font-size-sm);
         font-weight: 500;
         color: var(--text-primary);
     }
 
-    .device-status {
-        font-size: var(--font-size-xs);
-        color: var(--text-muted);
-    }
-
     /* ==========================================================================
-   Multi-Color Channel
+   Mode Tabs
    ========================================================================== */
-    .channel-section {
-        padding: var(--space-md);
-        background: var(--bg-secondary);
-        border-radius: var(--radius-md);
-    }
-
-    .channel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--space-md);
-    }
-
-    .channel-name {
-        font-size: var(--font-size-sm);
-        font-weight: 500;
-    }
-
-    .channel-colors {
+    .mode-tabs {
         display: flex;
         gap: var(--space-sm);
-        min-height: 44px;
         padding: var(--space-sm);
         background: var(--bg-card);
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--space-lg);
     }
 
-    .channel-color {
-        width: 36px;
-        height: 36px;
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        transition: transform var(--transition-fast);
-    }
-
-    .channel-color:hover {
-        transform: scale(1.1);
-    }
-
-    /* ==========================================================================
-   Factory Mode
-   ========================================================================== */
-    .factory-section {
-        padding: var(--space-lg);
-        background: var(--bg-card);
-        border-radius: var(--radius-lg);
-        border-left: 4px solid var(--warning);
-    }
-
-    .factory-section .section-title {
-        color: var(--warning);
-    }
-
-    .factory-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: var(--space-md);
-    }
-
-    .factory-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: var(--space-md);
-        background: var(--bg-secondary);
-        border-radius: var(--radius-md);
-    }
-
-    .factory-item-label {
-        font-size: var(--font-size-sm);
-        color: var(--text-secondary);
-    }
-
-    .factory-item-value {
-        font-size: var(--font-size-sm);
-        font-weight: 500;
-    }
-
-    /* ==========================================================================
-   OTA Section (Enhanced)
-   ========================================================================== */
-    .ota-mode-toggle {
-        display: flex;
-        gap: var(--space-sm);
-        margin-bottom: var(--space-md);
-    }
-
-    .ota-mode-btn {
-        padding: var(--space-sm) var(--space-lg);
-        font-size: var(--font-size-sm);
-        color: var(--text-secondary);
-        background: var(--bg-secondary);
-        border: none;
-        border-radius: var(--radius-full);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-    }
-
-    .ota-mode-btn.active {
-        color: white;
-        background: var(--primary);
-    }
-
-    /* ==========================================================================
-   Loading State
-   ========================================================================== */
-    .loading-overlay {
-        position: fixed;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: hsla(225, 25%, 8%, 0.9);
-        z-index: 1000;
-    }
-
-    .loading-spinner {
-        width: 48px;
-        height: 48px;
-        border: 4px solid var(--bg-secondary);
-        border-top-color: var(--primary);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    /* ==========================================================================
-   Empty State
-   ========================================================================== */
-    .empty-state {
+    .mode-tab {
+        flex: 1;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
-        padding: var(--space-2xl);
-        text-align: center;
-    }
-
-    .empty-state-icon {
-        font-size: 64px;
-        margin-bottom: var(--space-lg);
-        opacity: 0.5;
-    }
-
-    .empty-state-title {
-        font-size: var(--font-size-lg);
-        font-weight: 600;
+        gap: var(--space-xs);
+        padding: var(--space-md);
+        font-size: var(--font-size-sm);
+        color: var(--text-secondary);
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-lg);
+        cursor: pointer;
+        transition: all var(--transition-fast);
     }
 
     .mode-tab-icon {
@@ -540,280 +325,475 @@
     .mode-tab.active {
         color: white;
         background: linear-gradient(135deg, var(--primary), var(--accent-purple));
-    }
 
-    .device-icon {
-        width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: var(--font-size-xl);
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
-    }
+        .device-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xl);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+        }
 
-    .device-info {
-        flex: 1;
-    }
+        .device-info {
+            flex: 1;
+        }
 
-    .device-name {
-        font-weight: 500;
-        color: var(--text-primary);
-    }
+        .device-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
 
-    .device-status {
-        font-size: var(--font-size-xs);
-        color: var(--text-muted);
-    }
+        .device-status {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+        }
 
-    .device-details {
-        margin-top: var(--space-md);
-        padding-top: var(--space-md);
-        border-top: 1px solid var(--glass-border);
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-xs);
-    }
-
-    .device-details {
-        margin-top: var(--space-md);
-        padding-top: var(--space-md);
-        border-top: 1px solid var(--glass-border);
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-sm);
-        /* Increased gap for better readability */
-    }
-
-    .detail-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: var(--font-size-xs);
-    }
-
-    .detail-label {
-        color: var(--text-secondary);
-        font-weight: 500;
-    }
-
-    .detail-value {
-        color: var(--text-primary);
-        font-family: 'Monaco', 'Consolas', monospace;
-        background: var(--bg-secondary);
-        padding: 2px 6px;
-        border-radius: 4px;
-        /* Tag-like appearance */
-    }
-
-    /* ==========================================================================
+        /* ==========================================================================
    Multi-Color Channel
    ========================================================================== */
-    .channel-section {
-        padding: var(--space-md);
-        background: var(--bg-secondary);
-        border-radius: var(--radius-md);
-    }
+        .channel-section {
+            padding: var(--space-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
 
-    .channel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: var(--space-md);
-    }
+        .channel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
 
-    .channel-name {
-        font-size: var(--font-size-sm);
-        font-weight: 500;
-    }
+        .channel-name {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
 
-    .channel-colors {
-        display: flex;
-        gap: var(--space-sm);
-        min-height: 44px;
-        padding: var(--space-sm);
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
-    }
+        .channel-colors {
+            display: flex;
+            gap: var(--space-sm);
+            min-height: 44px;
+            padding: var(--space-sm);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+        }
 
-    .channel-color {
-        width: 36px;
-        height: 36px;
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        transition: transform var(--transition-fast);
-    }
+        .channel-color {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+        }
 
-    .channel-color:hover {
-        transform: scale(1.1);
-    }
+        .channel-color:hover {
+            transform: scale(1.1);
+        }
 
-    /* ==========================================================================
+        /* ==========================================================================
    Factory Mode
    ========================================================================== */
-    .factory-section {
-        padding: var(--space-lg);
-        background: var(--bg-card);
-        border-radius: var(--radius-lg);
-        border-left: 4px solid var(--warning);
-    }
+        .factory-section {
+            padding: var(--space-lg);
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--warning);
+        }
 
-    .factory-section .section-title {
-        color: var(--warning);
-    }
+        .factory-section .section-title {
+            color: var(--warning);
+        }
 
-    .factory-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: var(--space-md);
-    }
+        .factory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-md);
+        }
 
-    .factory-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: var(--space-md);
-        background: var(--bg-secondary);
-        border-radius: var(--radius-md);
-    }
+        .factory-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
 
-    .factory-item-label {
-        font-size: var(--font-size-sm);
-        color: var(--text-secondary);
-    }
+        .factory-item-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
 
-    .factory-item-value {
-        font-size: var(--font-size-sm);
-        font-weight: 500;
-    }
+        .factory-item-value {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
 
-    /* ==========================================================================
+        /* ==========================================================================
    OTA Section (Enhanced)
    ========================================================================== */
-    .ota-mode-toggle {
-        display: flex;
-        gap: var(--space-sm);
-        margin-bottom: var(--space-md);
-    }
+        .ota-mode-toggle {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
 
-    .ota-mode-btn {
-        padding: var(--space-sm) var(--space-lg);
-        font-size: var(--font-size-sm);
-        color: var(--text-secondary);
-        background: var(--bg-secondary);
-        border: none;
-        border-radius: var(--radius-full);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-    }
+        .ota-mode-btn {
+            padding: var(--space-sm) var(--space-lg);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
 
-    .ota-mode-btn.active {
-        color: white;
-        background: var(--primary);
-    }
+        .ota-mode-btn.active {
+            color: white;
+            background: var(--primary);
+        }
 
-    /* ==========================================================================
+        /* ==========================================================================
    Loading State
    ========================================================================== */
-    .loading-overlay {
-        position: fixed;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: hsla(225, 25%, 8%, 0.9);
-        z-index: 1000;
-    }
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: hsla(225, 25%, 8%, 0.9);
+            z-index: 1000;
+        }
 
-    .loading-spinner {
-        width: 48px;
-        height: 48px;
-        border: 4px solid var(--bg-secondary);
-        border-top-color: var(--primary);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--bg-secondary);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
 
-    @keyframes spin {
-        to {
-            transform: rotate(360deg);
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ==========================================================================
+   Empty State
+   ========================================================================== */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-2xl);
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: var(--space-lg);
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+        }
+
+        .mode-tab-icon {
+            font-size: var(--font-size-xl);
+        }
+
+        .mode-tab:hover {
+            color: var(--text-primary);
+            background: var(--bg-elevated);
+        }
+
+        .mode-tab.active {
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+        }
+
+        .device-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-xl);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+        }
+
+        .device-info {
+            flex: 1;
+        }
+
+        .device-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .device-status {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+        }
+
+        .device-details {
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+        }
+
+        .device-details {
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            /* Increased gap for better readability */
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: var(--font-size-xs);
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: var(--text-primary);
+            font-family: 'Monaco', 'Consolas', monospace;
+            background: var(--bg-secondary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            /* Tag-like appearance */
+        }
+
+        /* ==========================================================================
+   Multi-Color Channel
+   ========================================================================== */
+        .channel-section {
+            padding: var(--space-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .channel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-md);
+        }
+
+        .channel-name {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+
+        .channel-colors {
+            display: flex;
+            gap: var(--space-sm);
+            min-height: 44px;
+            padding: var(--space-sm);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+        }
+
+        .channel-color {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: transform var(--transition-fast);
+        }
+
+        .channel-color:hover {
+            transform: scale(1.1);
+        }
+
+        /* ==========================================================================
+   Factory Mode
+   ========================================================================== */
+        .factory-section {
+            padding: var(--space-lg);
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--warning);
+        }
+
+        .factory-section .section-title {
+            color: var(--warning);
+        }
+
+        .factory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-md);
+        }
+
+        .factory-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-md);
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .factory-item-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+
+        .factory-item-value {
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+        }
+
+        /* ==========================================================================
+   OTA Section (Enhanced)
+   ========================================================================== */
+        .ota-mode-toggle {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .ota-mode-btn {
+            padding: var(--space-sm) var(--space-lg);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .ota-mode-btn.active {
+            color: white;
+            background: var(--primary);
+        }
+
+        /* ==========================================================================
+   Loading State
+   ========================================================================== */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: hsla(225, 25%, 8%, 0.9);
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--bg-secondary);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ==========================================================================
+   Empty State
+   ========================================================================== */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-2xl);
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: var(--space-lg);
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+
+        .empty-state-text {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            margin-bottom: var(--space-lg);
         }
     }
 
     /* ==========================================================================
-   Empty State
-   ========================================================================== */
-    .empty-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: var(--space-2xl);
-        text-align: center;
-    }
-
-    .empty-state-icon {
-        font-size: 64px;
-        margin-bottom: var(--space-lg);
-        opacity: 0.5;
-    }
-
-    .empty-state-title {
-        font-size: var(--font-size-lg);
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: var(--space-sm);
-    }
-
-    .empty-state-text {
-        font-size: var(--font-size-sm);
-        color: var(--text-muted);
-        margin-bottom: var(--space-lg);
-    }
-}
-
-/* ==========================================================================
    Range Slider Customization
    ========================================================================== */
-input[type="range"] {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 6px;
-    background: var(--bg-elevated);
-    border-radius: var(--radius-full);
-    outline: none;
-    margin: var(--space-sm) 0;
-    cursor: pointer;
-}
+    input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 6px;
+        background: var(--bg-elevated);
+        border-radius: var(--radius-full);
+        outline: none;
+        margin: var(--space-sm) 0;
+        cursor: pointer;
+    }
 
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: white;
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    transition: transform var(--transition-fast);
-}
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        transition: transform var(--transition-fast);
+    }
 
-input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-}
+    input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.1);
+    }
 
-input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border: none;
-    border-radius: 50%;
-    background: white;
-    box-shadow: var(--shadow-sm);
-    cursor: pointer;
-    transition: transform var(--transition-fast);
-}
+    input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border: none;
+        border-radius: 50%;
+        background: white;
+        box-shadow: var(--shadow-sm);
+        cursor: pointer;
+        transition: transform var(--transition-fast);
+    }
 
-input[type="range"]::-moz-range-thumb:hover {
-    transform: scale(1.1);
-}
+    input[type="range"]::-moz-range-thumb:hover {
+        transform: scale(1.1);
+    }

@@ -62,11 +62,79 @@ class AmbientLightApp {
         this.initColorPicker();
         this.initLightController();
         this.bindEvents();
+
+        // 加载保存的状态
+        this.loadState();
+
         this.renderPresetColors();
         this.renderMultiPresets();
         this.renderDynamicPresets();
 
+        // 恢复 UI 状态
+        this.restoreUIState();
+
         console.log('[AmbientLightApp] 初始化完成');
+    }
+
+    loadState() {
+        try {
+            const saved = localStorage.getItem('ambientAppState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                this.currentMode = state.currentMode || 'single';
+                this.currentColor = state.currentColor || { r: 255, g: 0, b: 0 };
+                this.selectedMultiIndex = state.selectedMultiIndex || 0;
+                this.selectedDynamicIndex = state.selectedDynamicIndex || 0;
+                this.isDynamicToggleOn = state.isDynamicToggleOn !== undefined ? state.isDynamicToggleOn : false;
+                this.isSyncToggleOn = state.isSyncToggleOn !== undefined ? state.isSyncToggleOn : true;
+            }
+        } catch (e) {
+            console.error('加载状态失败:', e);
+        }
+    }
+
+    saveState() {
+        try {
+            const state = {
+                currentMode: this.currentMode,
+                currentColor: this.currentColor,
+                selectedMultiIndex: this.selectedMultiIndex,
+                selectedDynamicIndex: this.selectedDynamicIndex,
+                isDynamicToggleOn: this.dynamicToggle ? this.dynamicToggle.checked : false,
+                isSyncToggleOn: this.syncToggle ? this.syncToggle.checked : true
+            };
+            localStorage.setItem('ambientAppState', JSON.stringify(state));
+        } catch (e) {
+            console.error('保存状态失败:', e);
+        }
+    }
+
+    restoreUIState() {
+        // 恢复模式 Tab
+        this.switchMode(this.currentMode);
+
+        // 恢复 Toggle 状态
+        if (this.dynamicToggle) {
+            this.dynamicToggle.checked = this.isDynamicToggleOn;
+            if (this.dynamicModeLabel) {
+                this.dynamicModeLabel.textContent = this.isDynamicToggleOn ? '动态模式' : '静态模式';
+            }
+        }
+        if (this.syncToggle) {
+            this.syncToggle.checked = this.isSyncToggleOn;
+            if (this.syncModeLabel) {
+                this.syncModeLabel.textContent = this.isSyncToggleOn ? '同步模式' : '独立模式';
+            }
+            this.syncChannels.classList.toggle('hidden', !this.isSyncToggleOn);
+            this.separateChannels.classList.toggle('hidden', this.isSyncToggleOn);
+        }
+
+        // 恢复颜色选择器
+        if (this.colorPicker) {
+            const hex = `#${((1 << 24) + (this.currentColor.r << 16) + (this.currentColor.g << 8) + this.currentColor.b).toString(16).slice(1).toUpperCase()}`;
+            this.colorPicker.setColor(hex);
+            this.updateColorPreview(hex);
+        }
     }
 
     bindElements() {
@@ -116,6 +184,8 @@ class AmbientLightApp {
             onChange: (rgb, hex) => {
                 this.currentColor = rgb;
                 this.updateColorPreview(hex);
+                // Debounce save? simplified for now
+                this.saveState();
             },
             onSelect: (rgb, hex) => {
                 console.log('[ColorPicker] 选择颜色:', hex);
@@ -162,6 +232,7 @@ class AmbientLightApp {
             this.separateChannels.classList.toggle('hidden', isSync);
             this.protocol.setSyncMode(isSync);
             this.protocol.setZoneMode(false);
+            this.saveState();
         });
 
         // 动态/静态模式切换
@@ -171,7 +242,9 @@ class AmbientLightApp {
                 this.dynamicModeLabel.textContent = isDynamic ? '动态模式' : '静态模式';
             }
             this.log(`切换模式: ${isDynamic ? '动态' : '静态'}`);
+            this.log(`切换模式: ${isDynamic ? '动态' : '静态'}`);
             this.protocol.setDynamicMode(isDynamic);
+            this.saveState();
         });
 
         // 设备信息相关事件已移除
@@ -296,6 +369,8 @@ class AmbientLightApp {
         this.dynamicPanel.classList.toggle('hidden', mode !== 'dynamic');
 
         this.log(`切换到${mode === 'single' ? '单色' : mode === 'multi' ? '多色' : '律动'}模式`);
+
+        this.saveState();
 
         // 切换模式时自动发送当前选中状态
         if (this.isConnected) {
@@ -494,6 +569,7 @@ class AmbientLightApp {
 
         // 发送多色主题命令 (索引 + 1)
         this.protocol.setMultiTheme(index + 1);
+        this.saveState();
     }
 
     clearMultiColors() {
@@ -556,6 +632,7 @@ class AmbientLightApp {
 
         // 发送律动效果命令 (1-8)
         this.protocol.setDynamicEffect(preset.id);
+        this.saveState();
     }
 
     // ============ 设备信息 UI 更新 ============
