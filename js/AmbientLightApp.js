@@ -1344,7 +1344,11 @@ class AmbientLightApp {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+
+        // 延迟释放 URL，防止浏览器过早取消下载
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 100);
 
         this.log(`数据已保存: ${filename} (共 ${this.remoteData.length} 行)`);
     }
