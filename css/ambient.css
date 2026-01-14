@@ -327,18 +327,19 @@
 }
 
 /* Rectangular shape for Mode Presets (Multi/Dynamic) */
-#multiPresets,
-#dynamicPresets {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-lg);
+.color-grid#multiPresets,
+.color-grid#dynamicPresets {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: var(--space-lg) !important;
     padding: var(--space-md);
 }
 
-#multiPresets .color-swatch,
-#dynamicPresets .color-swatch {
+.color-grid#multiPresets .color-swatch,
+.color-grid#dynamicPresets .color-swatch {
     width: 100%;
     height: 56px;
+    aspect-ratio: auto !important;
     border-radius: var(--radius-md);
 }
 
