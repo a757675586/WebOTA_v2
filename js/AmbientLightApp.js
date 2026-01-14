@@ -182,8 +182,32 @@ class AmbientLightApp {
         this.btnClearMulti = document.getElementById('btnClearMulti');
         this.btnApplyMulti = document.getElementById('btnApplyMulti');
 
-        // 设备信息弹窗相关元素已移除
+        // 工厂模式相关元素
         this.btnFactory = document.getElementById('btnFactory');
+        this.btnEnterFactory = document.getElementById('btnEnterFactory');
+        this.btnExitFactory = document.getElementById('btnExitFactory');
+        this.factoryPanel = document.getElementById('factoryPanel');
+        this.ledConfigGrid = document.getElementById('ledConfigGrid');
+        this.sensitivityLevels = document.getElementById('sensitivityLevels');
+
+        // 工厂模式输入框
+        this.factoryVIN = document.getElementById('factoryVIN');
+        this.factoryCarCode = document.getElementById('factoryCarCode');
+        this.factoryFuncCode = document.getElementById('factoryFuncCode');
+
+        // 工厂模式按钮
+        this.btnRegisterVIN = document.getElementById('btnRegisterVIN');
+        this.btnSetCarCode = document.getElementById('btnSetCarCode');
+        this.btnSetFuncCode = document.getElementById('btnSetFuncCode');
+        this.btnFactoryReset = document.getElementById('btnFactoryReset');
+
+        // 高级功能开关
+        this.featureWelcome = document.getElementById('featureWelcome');
+        this.featureDoor = document.getElementById('featureDoor');
+        this.featureSpeed = document.getElementById('featureSpeed');
+        this.featureTurn = document.getElementById('featureTurn');
+        this.featureAC = document.getElementById('featureAC');
+        this.featureCrash = document.getElementById('featureCrash');
     }
 
     initColorPicker() {
@@ -258,6 +282,7 @@ class AmbientLightApp {
 
         // 工厂模式
         this.btnFactory?.addEventListener('click', () => this.enterFactoryMode());
+        this.btnEnterFactory?.addEventListener('click', () => this.enterFactoryMode());
 
         // 多色模式按钮
         this.btnClearMulti?.addEventListener('click', () => this.clearMultiColors());
@@ -324,6 +349,11 @@ class AmbientLightApp {
         this.btnScan.style.display = 'none';
         this.btnDisconnect.style.display = 'flex';
 
+        // 显示工厂模式按钮
+        if (this.btnEnterFactory) {
+            this.btnEnterFactory.classList.remove('hidden');
+        }
+
         this.log('设备已连接: ' + (device?.name || '未知'));
 
         // 连接成功后同步状态
@@ -350,6 +380,19 @@ class AmbientLightApp {
 
         this.btnScan.style.display = 'flex';
         this.btnDisconnect.style.display = 'none';
+
+        // 隐藏工厂模式按钮
+        if (this.btnEnterFactory) {
+            this.btnEnterFactory.classList.add('hidden');
+        }
+
+        // 如果在工厂模式中，退出
+        if (this.isFactoryMode) {
+            this.factoryPanel?.classList.add('hidden');
+            this.modeTabs?.classList.remove('hidden');
+            this.switchMode(this.currentMode);
+            this.isFactoryMode = false;
+        }
 
         this.log('设备已断开');
     }
@@ -669,16 +712,198 @@ class AmbientLightApp {
     }
 
     enterFactoryMode() {
-        this.hideDeviceInfo();
-        // 跳转到工厂模式页面或打开工厂模式
-        // 跳转到工厂模式页面或打开工厂模式
+        // 显示工厂模式面板，隐藏其他面板
+        this.singleColorPanel?.classList.add('hidden');
+        this.multiColorPanel?.classList.add('hidden');
+        this.dynamicPanel?.classList.add('hidden');
+        this.factoryPanel?.classList.remove('hidden');
+
+        // 隐藏模式标签
+        this.modeTabs?.classList.add('hidden');
+
+        this.isFactoryMode = true;
         this.log('进入工厂模式');
 
-        // 发送进入工厂模式命令
-        this.protocol.enterFactoryMode();
+        // 渲染 LED 配置网格
+        this.renderLedConfigGrid();
 
-        // 可以添加密码验证
-        window.location.href = 'index.html'; // 暂时跳转到 OTA 页面
+        // 绑定工厂模式事件
+        this.bindFactoryEvents();
+    }
+
+    exitFactoryMode() {
+        // 发送退出工厂模式命令
+        this.protocol.exitFactoryMode();
+
+        // 隐藏工厂模式面板
+        this.factoryPanel?.classList.add('hidden');
+
+        // 显示模式标签
+        this.modeTabs?.classList.remove('hidden');
+
+        // 恢复当前模式
+        this.switchMode(this.currentMode);
+
+        this.isFactoryMode = false;
+        this.log('退出工厂模式');
+    }
+
+    bindFactoryEvents() {
+        // 退出按钮
+        this.btnExitFactory?.addEventListener('click', () => this.exitFactoryMode());
+
+        // VIN 注册
+        this.btnRegisterVIN?.addEventListener('click', () => {
+            const vin = this.factoryVIN?.value?.trim();
+            if (!vin || vin.length !== 17) {
+                alert('请输入17位VIN码');
+                return;
+            }
+            this.protocol.registerVIN(vin);
+            this.log(`注册 VIN: ${vin}`);
+        });
+
+        // 车型编号
+        this.btnSetCarCode?.addEventListener('click', () => {
+            const code = parseInt(this.factoryCarCode?.value);
+            if (isNaN(code) || code < 0 || code > 255) {
+                alert('请输入 0-255 之间的数字');
+                return;
+            }
+            this.protocol.setCarCode(code);
+            this.log(`设置车型编号: ${code}`);
+        });
+
+        // 功能编号
+        this.btnSetFuncCode?.addEventListener('click', () => {
+            const code = parseInt(this.factoryFuncCode?.value);
+            if (isNaN(code) || code < 0 || code > 255) {
+                alert('请输入 0-255 之间的数字');
+                return;
+            }
+            this.protocol.setFunctionCode(code);
+            this.log(`设置功能编号: ${code}`);
+        });
+
+        // 音源选择
+        document.querySelectorAll('input[name="soundSource"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const isMic = e.target.value === 'mic';
+                this.protocol.setSoundSource(isMic);
+                this.log(`设置音源: ${isMic ? '内置麦克风' : '原车喇叭'}`);
+            });
+        });
+
+        // 灵敏度
+        this.sensitivityLevels?.querySelectorAll('.level-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const level = parseInt(e.target.dataset.level);
+                this.sensitivityLevels.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                this.protocol.setSensitivity(level);
+                this.log(`设置灵敏度: ${level}档`);
+            });
+        });
+
+        // 高级功能开关
+        const features = [
+            { el: this.featureWelcome, id: 0x1C, name: '迎宾灯' },
+            { el: this.featureDoor, id: 0x1D, name: '车门联动' },
+            { el: this.featureSpeed, id: 0x1E, name: '车速响应' },
+            { el: this.featureTurn, id: 0x1F, name: '转向联动' },
+            { el: this.featureAC, id: 0x20, name: '空调联动' },
+            { el: this.featureCrash, id: 0x21, name: '碰撞警示' }
+        ];
+
+        features.forEach(({ el, id, name }) => {
+            el?.addEventListener('change', (e) => {
+                this.protocol.setAdvancedFeature(id, e.target.checked);
+                this.log(`${name}: ${e.target.checked ? '开启' : '关闭'}`);
+            });
+        });
+
+        // 恢复出厂设置
+        this.btnFactoryReset?.addEventListener('click', () => {
+            if (confirm('确定要恢复出厂设置吗？此操作不可撤销！')) {
+                this.protocol.factoryReset();
+                this.log('恢复出厂设置');
+                alert('已发送恢复出厂设置命令');
+            }
+        });
+    }
+
+    renderLedConfigGrid() {
+        if (!this.ledConfigGrid) return;
+
+        // LED 区域配置数据
+        this.ledZones = [
+            { name: '主驾', icon: '🚗', count: 12, ltr: true },
+            { name: '副驾', icon: '🚗', count: 12, ltr: true },
+            { name: '左前', icon: '⬅️', count: 8, ltr: true },
+            { name: '右前', icon: '➡️', count: 8, ltr: false },
+            { name: '左后', icon: '⬅️', count: 6, ltr: true },
+            { name: '右后', icon: '➡️', count: 6, ltr: false }
+        ];
+
+        this.ledConfigGrid.innerHTML = this.ledZones.map((zone, index) => `
+            <div class="led-config-item" data-zone="${index}">
+                <div class="zone-icon">${zone.icon}</div>
+                <div class="zone-name">${zone.name}</div>
+                <div class="stepper-control">
+                    <button class="stepper-btn" data-action="decrease">−</button>
+                    <span class="stepper-value" data-zone="${index}">${zone.count}</span>
+                    <button class="stepper-btn" data-action="increase">+</button>
+                </div>
+                <div class="direction-toggle">
+                    <button class="dir-btn ${zone.ltr ? 'active' : ''}" data-dir="ltr">左→右</button>
+                    <button class="dir-btn ${!zone.ltr ? 'active' : ''}" data-dir="rtl">右→左</button>
+                </div>
+            </div>
+        `).join('');
+
+        // 绑定 LED 配置事件
+        this.ledConfigGrid.querySelectorAll('.led-config-item').forEach(item => {
+            const zoneIndex = parseInt(item.dataset.zone);
+
+            // 灯珠数量加减
+            item.querySelectorAll('.stepper-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const action = e.target.dataset.action;
+                    const valueEl = item.querySelector('.stepper-value');
+                    let count = parseInt(valueEl.textContent);
+
+                    if (action === 'increase' && count < 255) {
+                        count++;
+                    } else if (action === 'decrease' && count > 0) {
+                        count--;
+                    }
+
+                    valueEl.textContent = count;
+                    this.ledZones[zoneIndex].count = count;
+
+                    // 发送 LED 数量命令
+                    this.protocol.setLedCount(zoneIndex, count);
+                    this.log(`${this.ledZones[zoneIndex].name} 灯珠数: ${count}`);
+                });
+            });
+
+            // 方向切换
+            item.querySelectorAll('.dir-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const dir = e.target.dataset.dir;
+                    const isLtr = dir === 'ltr';
+
+                    item.querySelectorAll('.dir-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+
+                    this.ledZones[zoneIndex].ltr = isLtr;
+
+                    // 发送方向命令
+                    this.protocol.setLedDirection(zoneIndex, isLtr);
+                    this.log(`${this.ledZones[zoneIndex].name} 方向: ${isLtr ? '左→右' : '右→左'}`);
+                });
+            });
+        });
     }
 
     // ============ 日志 ============
@@ -694,3 +919,4 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 export default AmbientLightApp;
+

@@ -93,6 +93,10 @@
                                 <span class="btn-icon">⏏️</span>
                                 断开连接
                             </button>
+                            <button class="btn btn-warning btn-lg mt-sm hidden" id="btnEnterFactory">
+                                <span class="btn-icon">🔧</span>
+                                工厂模式
+                            </button>
                         </div>
                     </div>
 
@@ -289,6 +293,140 @@
                             <div class="color-grid" id="dynamicPresets"
                                 style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">
                                 <!-- 律动预设将由 JS 动态生成 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 工厂模式面板 (默认隐藏) -->
+                    <div class="card card-glass hidden" id="factoryPanel">
+                        <div class="card-header">
+                            <div class="card-icon">🔧</div>
+                            <h2>工厂模式</h2>
+                            <button class="btn btn-sm btn-outline" id="btnExitFactory" style="margin-left: auto;">
+                                退出
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <!-- VIN 注册 -->
+                            <div class="factory-section">
+                                <div class="section-title">📋 设备注册</div>
+                                <div class="factory-input-group">
+                                    <label>VIN 码 (17位)</label>
+                                    <div class="input-with-btn">
+                                        <input type="text" id="factoryVIN" maxlength="17" placeholder="输入车辆VIN码">
+                                        <button class="btn btn-sm btn-primary" id="btnRegisterVIN">注册</button>
+                                    </div>
+                                </div>
+                                <div class="factory-row mt-md">
+                                    <div class="factory-input-group">
+                                        <label>车型编号</label>
+                                        <div class="input-with-btn">
+                                            <input type="number" id="factoryCarCode" min="0" max="255"
+                                                placeholder="0-255">
+                                            <button class="btn btn-sm btn-primary" id="btnSetCarCode">设置</button>
+                                        </div>
+                                    </div>
+                                    <div class="factory-input-group">
+                                        <label>功能编号</label>
+                                        <div class="input-with-btn">
+                                            <input type="number" id="factoryFuncCode" min="0" max="255"
+                                                placeholder="0-255">
+                                            <button class="btn btn-sm btn-primary" id="btnSetFuncCode">设置</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- LED 灯带配置 -->
+                            <div class="factory-section mt-lg">
+                                <div class="section-title">💡 灯带安装配置</div>
+                                <div class="led-config-grid" id="ledConfigGrid">
+                                    <!-- JS 动态生成 6 个区域配置 -->
+                                </div>
+                            </div>
+
+                            <!-- 音源选择 -->
+                            <div class="factory-section mt-lg">
+                                <div class="section-title">🎵 律动音源</div>
+                                <div class="radio-group">
+                                    <label class="radio-card">
+                                        <input type="radio" name="soundSource" value="mic" checked>
+                                        <span class="radio-label">内置麦克风</span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" name="soundSource" value="speaker">
+                                        <span class="radio-label">原车喇叭</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 灵敏度 -->
+                            <div class="factory-section mt-lg">
+                                <div class="section-title">📊 律动灵敏度</div>
+                                <div class="sensitivity-levels" id="sensitivityLevels">
+                                    <button class="level-btn" data-level="1">1档</button>
+                                    <button class="level-btn active" data-level="2">2档</button>
+                                    <button class="level-btn" data-level="3">3档</button>
+                                    <button class="level-btn" data-level="4">4档</button>
+                                    <button class="level-btn" data-level="5">5档</button>
+                                </div>
+                            </div>
+
+                            <!-- 高级功能 -->
+                            <div class="factory-section mt-lg">
+                                <div class="section-title">⚙️ 高级功能</div>
+                                <div class="advanced-toggles">
+                                    <div class="switch-card">
+                                        <span class="switch-card-label">迎宾灯</span>
+                                        <label class="switch">
+                                            <input type="checkbox" id="featureWelcome">
+                                            <span class="switch-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="switch-card">
+                                        <span class="switch-card-label">车门联动</span>
+                                        <label class="switch">
+                                            <input type="checkbox" id="featureDoor">
+                                            <span class="switch-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="switch-card">
+                                        <span class="switch-card-label">车速响应</span>
+                                        <label class="switch">
+                                            <input type="checkbox" id="featureSpeed">
+                                            <span class="switch-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="switch-card">
+                                        <span class="switch-card-label">转向联动</span>
+                                        <label class="switch">
+                                            <input type="checkbox" id="featureTurn">
+                                            <span class="switch-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="switch-card">
+                                        <span class="switch-card-label">空调联动</span>
+                                        <label class="switch">
+                                            <input type="checkbox" id="featureAC">
+                                            <span class="switch-slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="switch-card">
+                                        <span class="switch-card-label">碰撞警示</span>
+                                        <label class="switch">
+                                            <input type="checkbox" id="featureCrash">
+                                            <span class="switch-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 危险操作 -->
+                            <div class="factory-section mt-lg danger-zone">
+                                <div class="section-title">⚠️ 危险操作</div>
+                                <button class="btn btn-danger btn-lg" id="btnFactoryReset">
+                                    🔄 恢复出厂设置
+                                </button>
                             </div>
                         </div>
                     </div>

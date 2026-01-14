@@ -425,6 +425,54 @@ export class AmbientProtocol {
     async factoryReset() {
         return this.send(cmdFactoryReset());
     }
+
+    /** 注册 VIN 码 */
+    async registerVIN(vin) {
+        // 将字符串转为 HEX
+        const hexVin = Array.from(vin).map(c => toHex(c.charCodeAt(0))).join('');
+        return this.send(`<0A1211${hexVin}>`);
+    }
+
+    /** 设置车型编号 */
+    async setCarCode(code) {
+        return this.send(`<0B01${toHex(code)}>`);
+    }
+
+    /** 设置功能编号 */
+    async setFunctionCode(code) {
+        return this.send(`<0C01${toHex(code)}>`);
+    }
+
+    /** 设置音源 */
+    async setSoundSource(isMic) {
+        return this.send(cmdDynamicSource(!isMic));  // API 反转: 原车=true, 麦克风=false
+    }
+
+    /** 设置灵敏度 */
+    async setSensitivity(level) {
+        return this.send(cmdDynamicSensitivity(level));
+    }
+
+    /** 设置高级功能开关 */
+    async setAdvancedFeature(featureId, enabled) {
+        return this.send(cmdAttachment(featureId, enabled));
+    }
+
+    /** 设置 LED 数量 */
+    async setLedCount(zoneIndex, count) {
+        // Zone 索引映射到命令: 0-5 -> 0x0D,0x0E,0x0F,0x10,0x12,0x13 (跳过 0x11)
+        const zoneMap = [0x0D, 0x0E, 0x0F, 0x10, 0x12, 0x13];
+        const cmd = zoneMap[zoneIndex] || 0x0D;
+        return this.send(`<${toHex(cmd)}01${toHex(count)}>`);
+    }
+
+    /** 设置 LED 方向 */
+    async setLedDirection(zoneIndex, leftToRight) {
+        // Zone 索引映射到方向命令: 0x14-0x19
+        const dirMap = [0x14, 0x15, 0x16, 0x17, 0x18, 0x19];
+        const cmd = dirMap[zoneIndex] || 0x14;
+        return this.send(`<${toHex(cmd)}010${leftToRight ? '0' : '1'}>`);
+    }
 }
 
 export default AmbientProtocol;
