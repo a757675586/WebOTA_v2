@@ -170,7 +170,9 @@ class BleService {
      */
     handleNotification(event) {
         const value = event.target.value;
-        const bytes = new Uint8Array(value.buffer);
+        // 重要: 必须使用 byteOffset 和 byteLength 来正确提取接收到的字节
+        // 否则 value.buffer 可能包含整个底层缓冲区的旧数据
+        const bytes = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
         const hexStr = bytesToHexString(bytes);
 
         // 检查是否是二进制升级响应 (第一个字节是 0xFF 或 0xD9)
