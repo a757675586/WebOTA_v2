@@ -587,6 +587,11 @@ class AmbientLightApp {
         setSafeText('infoFirmware', this.deviceInfo.swVersion || this.deviceInfo.firmware); // 兼容 swVersion 和 firmware 字段
         setSafeText('infoHardware', this.deviceInfo.hwVersion || this.deviceInfo.hardware); // 兼容 hwVersion 和 hardware 字段
 
+        // 更新侧边栏直接显示的详细信息
+        setSafeText('detailCarModel', this.deviceInfo.carModel);
+        setSafeText('detailHwVersion', this.deviceInfo.hwVersion || this.deviceInfo.hardware);
+        setSafeText('detailSwVersion', this.deviceInfo.swVersion || this.deviceInfo.firmware);
+
         // 同时更新 OTA 面板的信息 (如果存在)
         setSafeText('hwVersion', this.deviceInfo.hwVersion || this.deviceInfo.hardware);
         setSafeText('swVersion', this.deviceInfo.swVersion || this.deviceInfo.firmware);
