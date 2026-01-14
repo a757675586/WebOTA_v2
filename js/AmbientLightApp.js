@@ -221,9 +221,172 @@ class AmbientLightApp {
         this.isRemoteRunning = false;
         this.remoteMode = 'CAN';
         this.remoteData = [];
+        // 性能优化: 生产者-消费者模型
+        this.remoteDataQueue = [];
+        this.maxLogLines = 500;   // UI 显示限制
+        this.maxDataLines = 10000; // 内存存储限制
+        this.isRendering = false; // 渲染循环状态
     }
 
-    initColorPicker() {
+    bindRemoteControlEvents() {
+        // ... (保持模式选择代码不变) ...
+        document.querySelectorAll('input[name="remoteMode"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.remoteMode = e.target.value;
+                const placeholder = this.remoteMode === 'CAN'
+                    ? '输入 CAN ID (如: 100 或 100,200)'
+                    : '输入 LIN 数据 (0-255, 最多6个, 逗号分隔)';
+                if (this.remoteIdInput) {
+                    this.remoteIdInput.placeholder = placeholder;
+                }
+                this.log(`远程控制模式: ${this.remoteMode}`);
+            });
+        });
+
+        // 开始/停止按钮
+        this.btnRemoteStart?.addEventListener('click', () => {
+            if (this.isRemoteRunning) {
+                this.stopRemoteMonitor();
+            } else {
+                this.startRemoteMonitor();
+            }
+        });
+
+        // 清空数据
+        this.btnRemoteClear?.addEventListener('click', () => {
+            if (confirm('确定清空所有数据?')) {
+                this.remoteData = [];
+                this.remoteDataQueue = [];
+                if (this.remoteDataLog) {
+                    this.remoteDataLog.innerHTML = '<div class="log-placeholder">监控数据将显示在这里...</div>';
+                }
+            }
+        });
+
+        // 保存数据
+        this.btnRemoteSave?.addEventListener('click', () => {
+            this.saveRemoteData();
+        });
+    }
+
+    startRemoteMonitor() {
+        const input = this.remoteIdInput?.value?.trim() || '';
+
+        if (this.remoteMode === 'CAN') {
+            this.protocol.startCANMonitor(input);
+        } else {
+            if (!input) {
+                alert('请输入 LIN 数据');
+                return;
+            }
+            this.protocol.startLINMonitor(input);
+        }
+
+        this.isRemoteRunning = true;
+        this.updateRemoteUI();
+
+        // 启动渲染循环
+        this.startRenderLoop();
+        this.log(`远程控制已启动: ${this.remoteMode}`);
+    }
+
+    stopRemoteMonitor() {
+        this.protocol.stopRemoteMonitor();
+        this.isRemoteRunning = false;
+        this.updateRemoteUI();
+        this.log('远程控制已停止');
+    }
+
+    // 消费者: 渲染循环
+    startRenderLoop() {
+        if (this.isRendering) return;
+        this.isRendering = true;
+
+        const render = () => {
+            if (!this.isRemoteRunning && this.remoteDataQueue.length === 0) {
+                this.isRendering = false;
+                return;
+            }
+
+            if (this.remoteDataQueue.length > 0 && this.remoteDataLog) {
+                // 如果队列积压太多，丢弃旧数据，防止卡顿
+                if (this.remoteDataQueue.length > 1000) {
+                    this.remoteDataQueue.splice(0, this.remoteDataQueue.length - 1000);
+                }
+
+                // 批量处理 (每帧处理最多 100 条)
+                const batch = this.remoteDataQueue.splice(0, 100);
+
+                // 移除占位符
+                if (this.remoteDataLog.querySelector('.log-placeholder')) {
+                    this.remoteDataLog.innerHTML = '';
+                }
+
+                // 使用 DocumentFragment 高效插入
+                const fragment = document.createDocumentFragment();
+                batch.forEach(line => {
+                    const div = document.createElement('div');
+                    div.className = 'log-item';
+                    div.textContent = line;
+                    fragment.appendChild(div);
+                });
+
+                this.remoteDataLog.appendChild(fragment);
+
+                // 限制界面显示的行数 (移除顶部的旧行)
+                while (this.remoteDataLog.children.length > this.maxLogLines) {
+                    this.remoteDataLog.removeChild(this.remoteDataLog.firstChild);
+                }
+
+                // 自动滚动到底部
+                this.remoteDataLog.scrollTop = this.remoteDataLog.scrollHeight;
+            }
+
+            requestAnimationFrame(render);
+        };
+        render();
+    }
+
+    // 生产者: 接收数据
+    addRemoteData(data) {
+        const timestamp = new Date().toLocaleTimeString();
+        const line = `[${timestamp}] ${data}`;
+
+        // 存入内存数组 (用于保存)
+        if (this.remoteData.length > this.maxDataLines) {
+            this.remoteData.shift();
+        }
+        this.remoteData.push(line);
+
+        // 推入渲染队列
+        this.remoteDataQueue.push(line);
+        // 不再直接更新 DOM -> updateRemoteDataLog()
+    }
+
+    // 已废弃，由 startRenderLoop 替代
+    updateRemoteDataLog() { }
+
+    saveRemoteData() {
+        if (this.remoteData.length === 0) {
+            alert('没有数据可保存');
+            return;
+        }
+
+        const content = this.remoteData.join('\n');
+        const filename = `${this.remoteMode}-${Date.now()}.txt`;
+
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        this.log(`数据已保存: ${filename} (共 ${this.remoteData.length} 行)`);
+    }
+
+    updateRemoteUI() {
         this.colorPicker = new ColorPicker('colorPickerCanvas', 'colorIndicator', {
             onChange: (rgb, hex) => {
                 this.currentColor = rgb;
