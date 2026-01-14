@@ -1214,7 +1214,10 @@ class AmbientLightApp {
         this.btnRemoteClear?.addEventListener('click', () => {
             if (confirm('确定清空所有数据?')) {
                 this.remoteData = [];
-                this.updateRemoteDataLog();
+                this.remoteDataQueue = [];
+                if (this.remoteDataLog) {
+                    this.remoteDataLog.innerHTML = '<div class="log-placeholder">监控数据将显示在这里...</div>';
+                }
             }
         });
 
@@ -1228,10 +1231,8 @@ class AmbientLightApp {
         const input = this.remoteIdInput?.value?.trim() || '';
 
         if (this.remoteMode === 'CAN') {
-            // CAN 模式
             this.protocol.startCANMonitor(input);
         } else {
-            // LIN 模式
             if (!input) {
                 alert('请输入 LIN 数据');
                 return;
@@ -1241,6 +1242,9 @@ class AmbientLightApp {
 
         this.isRemoteRunning = true;
         this.updateRemoteUI();
+
+        // 启动渲染循环
+        this.startRenderLoop();
         this.log(`远程控制已启动: ${this.remoteMode}`);
     }
 
@@ -1249,6 +1253,94 @@ class AmbientLightApp {
         this.isRemoteRunning = false;
         this.updateRemoteUI();
         this.log('远程控制已停止');
+    }
+
+    // 消费者: 渲染循环
+    startRenderLoop() {
+        if (this.isRendering) return;
+        this.isRendering = true;
+
+        const render = () => {
+            if (!this.isRemoteRunning && this.remoteDataQueue.length === 0) {
+                this.isRendering = false;
+                return;
+            }
+
+            if (this.remoteDataQueue.length > 0 && this.remoteDataLog) {
+                // 如果队列积压太多，丢弃旧数据，防止卡顿
+                if (this.remoteDataQueue.length > 1000) {
+                    this.remoteDataQueue.splice(0, this.remoteDataQueue.length - 1000);
+                }
+
+                // 批量处理 (每帧处理最多 100 条)
+                const batch = this.remoteDataQueue.splice(0, 100);
+
+                // 移除占位符
+                if (this.remoteDataLog.querySelector('.log-placeholder')) {
+                    this.remoteDataLog.innerHTML = '';
+                }
+
+                // 使用 DocumentFragment 高效插入
+                const fragment = document.createDocumentFragment();
+                batch.forEach(line => {
+                    const div = document.createElement('div');
+                    div.className = 'log-item';
+                    div.textContent = line;
+                    fragment.appendChild(div);
+                });
+
+                this.remoteDataLog.appendChild(fragment);
+
+                // 限制界面显示的行数 (移除顶部的旧行)
+                while (this.remoteDataLog.children.length > this.maxLogLines) {
+                    this.remoteDataLog.removeChild(this.remoteDataLog.firstChild);
+                }
+
+                // 自动滚动到底部
+                this.remoteDataLog.scrollTop = this.remoteDataLog.scrollHeight;
+            }
+
+            requestAnimationFrame(render);
+        };
+        render();
+    }
+
+    // 生产者: 接收数据
+    addRemoteData(data) {
+        const timestamp = new Date().toLocaleTimeString();
+        const line = `[${timestamp}] ${data}`;
+
+        // 存入内存数组 (用于保存)
+        if (this.remoteData.length > this.maxDataLines) {
+            this.remoteData.shift();
+        }
+        this.remoteData.push(line);
+
+        // 推入渲染队列
+        this.remoteDataQueue.push(line);
+    }
+
+    // 兼容旧代码调用
+    updateRemoteDataLog() { }
+
+    saveRemoteData() {
+        if (this.remoteData.length === 0) {
+            alert('没有数据可保存');
+            return;
+        }
+
+        const content = this.remoteData.join('\n');
+        const filename = `${this.remoteMode}-${Date.now()}.txt`;
+
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        this.log(`数据已保存: ${filename} (共 ${this.remoteData.length} 行)`);
     }
 
     updateRemoteUI() {
@@ -1263,44 +1355,58 @@ class AmbientLightApp {
         }
     }
 
-    addRemoteData(data) {
-        const timestamp = new Date().toLocaleTimeString();
-        this.remoteData.push(`[${timestamp}] ${data}`);
-        this.updateRemoteDataLog();
-    }
-
-    updateRemoteDataLog() {
-        if (!this.remoteDataLog) return;
-
-        if (this.remoteData.length === 0) {
-            this.remoteDataLog.innerHTML = '<div class="log-placeholder">监控数据将显示在这里...</div>';
-        } else {
-            this.remoteDataLog.innerHTML = this.remoteData
-                .map((item, i) => `<div class="log-item">${i + 1}) ${item}</div>`)
-                .join('');
-            // 滚动到底部
-            this.remoteDataLog.scrollTop = this.remoteDataLog.scrollHeight;
-        }
-    }
-
-    saveRemoteData() {
-        if (this.remoteData.length === 0) {
-            alert('没有数据可保存');
+    initColorPicker() {
+        // 检查 ColorPicker 是否存在
+        if (typeof ColorPicker === 'undefined') {
+            console.warn('ColorPicker library not loaded');
             return;
         }
 
-        const content = this.remoteData.join('\n');
-        const filename = `${this.remoteMode}-${Date.now()}.txt`;
+        this.colorPicker = new ColorPicker('colorPickerCanvas', 'colorIndicator', {
+            onChange: (rgb, hex) => {
+                this.currentColor = rgb;
+                this.updateColorPreview(hex);
+                this.saveState();
 
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.click();
-        URL.revokeObjectURL(url);
+                if (this.bleService && this.bleService.isConnected()) {
+                    if (this.colorDebounceTimer) clearTimeout(this.colorDebounceTimer);
+                    this.colorDebounceTimer = setTimeout(() => {
+                        this.protocol.setColor(rgb.r, rgb.g, rgb.b);
+                    }, 100);
+                }
+            },
+            onSelect: (rgb, hex) => {
+                console.log('[ColorPicker] 选择颜色:', hex);
+            }
+        });
+    }
 
-        this.log(`数据已保存: ${filename}`);
+    updateColorPreview(hex) {
+        if (this.colorPreview) {
+            this.colorPreview.style.backgroundColor = hex;
+        }
+    }
+
+    initLightController() {
+        // 灯光控制初始化 (亮度/速度等)
+        const brightnessSlider = document.getElementById('brightnessSlider');
+        if (brightnessSlider) {
+            brightnessSlider.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                this.protocol.setBrightness(val);
+                this.log(`亮度: ${val}`);
+            });
+        }
+
+        // 速度控制
+        const speedSlider = document.getElementById('speedSlider');
+        if (speedSlider) {
+            speedSlider.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                this.protocol.setSpeed(val);
+                this.log(`速度: ${val}`);
+            });
+        }
     }
 
     renderLedConfigGrid() {
@@ -1319,20 +1425,20 @@ class AmbientLightApp {
         }
 
         this.ledConfigGrid.innerHTML = this.ledZones.map((zone, index) => `
-            <div class="led-config-item" data-zone="${index}">
-                <div class="zone-icon">${zone.icon}</div>
-                <div class="zone-name">${zone.name}</div>
-                <div class="stepper-control">
-                    <button class="stepper-btn" data-action="decrease">−</button>
-                    <span class="stepper-value" data-zone="${index}">${zone.count}</span>
-                    <button class="stepper-btn" data-action="increase">+</button>
+                <div class="led-config-item" data-zone="${index}">
+                    <div class="zone-icon">${zone.icon}</div>
+                    <div class="zone-name">${zone.name}</div>
+                    <div class="stepper-control">
+                        <button class="stepper-btn" data-action="decrease">−</button>
+                        <span class="stepper-value" data-zone="${index}">${zone.count}</span>
+                        <button class="stepper-btn" data-action="increase">+</button>
+                    </div>
+                    <div class="direction-toggle">
+                        <button class="dir-btn ${zone.ltr ? 'active' : ''}" data-dir="ltr">左→右</button>
+                        <button class="dir-btn ${!zone.ltr ? 'active' : ''}" data-dir="rtl">右→左</button>
+                    </div>
                 </div>
-                <div class="direction-toggle">
-                    <button class="dir-btn ${zone.ltr ? 'active' : ''}" data-dir="ltr">左→右</button>
-                    <button class="dir-btn ${!zone.ltr ? 'active' : ''}" data-dir="rtl">右→左</button>
-                </div>
-            </div>
-        `).join('');
+            `).join('');
 
         // 绑定 LED 配置事件
         this.ledConfigGrid.querySelectorAll('.led-config-item').forEach(item => {
