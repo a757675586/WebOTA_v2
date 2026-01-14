@@ -281,9 +281,9 @@
 
 /* Color Swatches */
 .color-swatch {
-    width: 48px;
+    width: 80px;
     height: 48px;
-    border-radius: var(--radius-lg);
+    border-radius: 12px;
     cursor: pointer;
     transition: all var(--transition-fast);
     border: 2px solid var(--glass-border);
@@ -321,8 +321,8 @@
     font-size: 9px;
     padding: 6px 2px 2px;
     text-align: center;
-    border-bottom-left-radius: var(--radius-lg);
-    border-bottom-right-radius: var(--radius-lg);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
     line-height: 1.2;
     letter-spacing: 0.5px;
     pointer-events: none;
