@@ -1215,6 +1215,7 @@ class AmbientLightApp {
             if (confirm('确定清空所有数据?')) {
                 this.remoteData = [];
                 this.remoteDataQueue = [];
+                this.remoteDataCounter = 0;
                 if (this.remoteDataLog) {
                     this.remoteDataLog.innerHTML = '<div class="log-placeholder">监控数据将显示在这里...</div>';
                 }
@@ -1307,8 +1308,11 @@ class AmbientLightApp {
 
     // 生产者: 接收数据
     addRemoteData(data) {
-        const timestamp = new Date().toLocaleTimeString();
-        const line = `[${timestamp}] ${data}`;
+        if (typeof this.remoteDataCounter === 'undefined') {
+            this.remoteDataCounter = 0;
+        }
+        this.remoteDataCounter++;
+        const line = `[${this.remoteDataCounter}] ${data}`;
 
         // 存入内存数组 (用于保存)
         if (this.remoteData.length > this.maxDataLines) {
@@ -1337,7 +1341,9 @@ class AmbientLightApp {
         const a = document.createElement('a');
         a.href = url;
         a.download = filename;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
         this.log(`数据已保存: ${filename} (共 ${this.remoteData.length} 行)`);
