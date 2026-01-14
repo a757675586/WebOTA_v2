@@ -478,6 +478,110 @@ export class AmbientProtocol {
         const cmd = dirMap[zoneIndex] || 0x14;
         return this.send(`<${toHex(cmd)}010${leftToRight ? '0' : '1'}>`);
     }
+
+    /**
+     * 启动 CAN 监控
+     * 帧格式: [0xFF, 0xDA, enabled, operation, idFrom(4B), idTo(4B), maxFrames(2B)]
+     * @param {string} param - CAN ID 参数，支持: 空(默认), 单个ID(hex), 范围(100,200)
+     */
+    async startCANMonitor(param = '') {
+        let idFrom = 0;
+        let idTo = 0;
+        let operation = 2;  // 0=set, 1=append, 2=default
+        const maxFrames = 100;
+
+        if (param === '') {
+            idFrom = 0xFFFFFFFF;
+            idTo = 0xFFFFFFFF;
+            operation = 2;
+        } else {
+            let sepPos = param.indexOf(',');
+            if (sepPos === -1) sepPos = param.indexOf('-');
+
+            if (sepPos === -1) {
+                // 单个 ID
+                idFrom = parseInt(param, 16);
+                idTo = idFrom;
+                operation = 0;
+            } else {
+                // 范围
+                idFrom = parseInt(param.substring(0, sepPos), 16);
+                idTo = parseInt(param.substring(sepPos + 1), 16);
+                operation = 1;
+            }
+        }
+
+        // 构建二进制帧
+        const frame = new Uint8Array(14);
+        frame[0] = 0xFF;
+        frame[1] = 0xDA;  // CMD_CAN_FRAME_REQUEST
+        frame[2] = 1;     // enabled
+        frame[3] = operation;
+        // idFrom (little-endian 4 bytes)
+        frame[4] = idFrom & 0xFF;
+        frame[5] = (idFrom >> 8) & 0xFF;
+        frame[6] = (idFrom >> 16) & 0xFF;
+        frame[7] = (idFrom >> 24) & 0xFF;
+        // idTo (little-endian 4 bytes)
+        frame[8] = idTo & 0xFF;
+        frame[9] = (idTo >> 8) & 0xFF;
+        frame[10] = (idTo >> 16) & 0xFF;
+        frame[11] = (idTo >> 24) & 0xFF;
+        // maxFrames (little-endian 2 bytes)
+        frame[12] = maxFrames & 0xFF;
+        frame[13] = (maxFrames >> 8) & 0xFF;
+
+        console.log('[AmbientProtocol] 启动 CAN 监控:', param, frame);
+        return this.sendBinary(frame);
+    }
+
+    /**
+     * 启动 LIN 监控
+     * 帧格式: <23{count}{data...}>
+     * @param {string} param - 逗号分隔的数字 (0-255), 最多 6 个
+     */
+    async startLINMonitor(param) {
+        const parts = param.replace(/，/g, ',').split(',').filter(s => s.trim() !== '');
+        if (parts.length > 6) {
+            console.warn('[AmbientProtocol] LIN 最多 6 个数字');
+            return false;
+        }
+
+        let hexData = '';
+        for (const p of parts) {
+            const num = parseInt(p.trim());
+            if (isNaN(num) || num < 0 || num > 255) {
+                console.warn('[AmbientProtocol] LIN 数据必须是 0-255');
+                return false;
+            }
+            hexData += toHex(num);
+        }
+
+        const cmd = `<230${parts.length}${hexData}>`;
+        console.log('[AmbientProtocol] 启动 LIN 监控:', cmd);
+        return this.send(cmd);
+    }
+
+    /** 停止远程监控 */
+    async stopRemoteMonitor() {
+        // 发送关闭模块命令 [0xFF, 0xDC]
+        const frame = new Uint8Array([0xFF, 0xDC]);
+        console.log('[AmbientProtocol] 停止远程监控');
+        return this.sendBinary(frame);
+    }
+
+    /** 发送二进制数据 */
+    async sendBinary(data) {
+        if (!this.bleService || !this.bleService.isConnected()) {
+            console.warn('[AmbientProtocol] 设备未连接');
+            return false;
+        }
+
+        console.log('[AmbientProtocol] 发送二进制:', Array.from(data).map(b => b.toString(16).padStart(2, '0')).join(' '));
+        await this.bleService.send(data);
+        return true;
+    }
 }
 
 export default AmbientProtocol;
+

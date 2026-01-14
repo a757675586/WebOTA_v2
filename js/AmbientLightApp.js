@@ -208,6 +208,19 @@ class AmbientLightApp {
         this.featureTurn = document.getElementById('featureTurn');
         this.featureAC = document.getElementById('featureAC');
         this.featureCrash = document.getElementById('featureCrash');
+
+        // 远程控制元素
+        this.remoteIdInput = document.getElementById('remoteIdInput');
+        this.btnRemoteStart = document.getElementById('btnRemoteStart');
+        this.btnRemoteClear = document.getElementById('btnRemoteClear');
+        this.btnRemoteSave = document.getElementById('btnRemoteSave');
+        this.remoteStatus = document.getElementById('remoteStatus');
+        this.remoteDataLog = document.getElementById('remoteDataLog');
+
+        // 远程控制状态
+        this.isRemoteRunning = false;
+        this.remoteMode = 'CAN';
+        this.remoteData = [];
     }
 
     initColorPicker() {
@@ -400,12 +413,24 @@ class AmbientLightApp {
     onDataReceived(data) {
         console.log('[AmbientLightApp] 收到数据:', data);
 
+        // 处理二进制 CAN 帧响应
+        let bytes = null;
+        if (data instanceof ArrayBuffer) {
+            bytes = new Uint8Array(data);
+        } else if (data instanceof Uint8Array) {
+            bytes = data;
+        }
+
+        // 检查 CAN 帧响应 [0xFF, 0xDB, ...]
+        if (bytes && bytes.length >= 15 && bytes[0] === 0xFF && bytes[1] === 0xDB) {
+            this.parseCANFrame(bytes);
+            return;
+        }
+
         // 将 ArrayBuffer/Uint8Array 转为字符串
         let text = '';
-        if (data instanceof ArrayBuffer) {
-            text = new TextDecoder().decode(data);
-        } else if (data instanceof Uint8Array) {
-            text = new TextDecoder().decode(data);
+        if (bytes) {
+            text = new TextDecoder().decode(bytes);
         } else if (typeof data === 'string') {
             text = data;
         }
@@ -414,6 +439,24 @@ class AmbientLightApp {
         if (text.startsWith('<FD') && this.isFactoryMode) {
             this.parseFactoryConfig(text);
         }
+    }
+
+    /**
+     * 解析 CAN 帧响应
+     * 格式: [0xFF, 0xDB, DLC, ID(4B), DATA(8B)]
+     */
+    parseCANFrame(bytes) {
+        if (!this.isRemoteRunning) return;
+
+        const dlc = bytes[2];
+        // ID (little-endian 4 bytes)
+        const id = bytes[3] | (bytes[4] << 8) | (bytes[5] << 16) | (bytes[6] << 24);
+        // Data (8 bytes starting at index 7)
+        const dataBytes = Array.from(bytes.slice(7, 15));
+        const dataHex = dataBytes.slice(0, dlc).map(b => b.toString(16).padStart(2, '0')).join(' ');
+
+        const formatted = `${id.toString(16).padStart(8, '0').toUpperCase()}-> ${dlc.toString().padStart(2, '0')} ${dataHex.toUpperCase()}`;
+        this.addRemoteData(formatted);
     }
 
     /**
@@ -975,6 +1018,126 @@ class AmbientLightApp {
                 alert('已发送恢复出厂设置命令');
             }
         });
+
+        // 远程控制事件
+        this.bindRemoteControlEvents();
+    }
+
+    bindRemoteControlEvents() {
+        // 模式选择
+        document.querySelectorAll('input[name="remoteMode"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.remoteMode = e.target.value;
+                const placeholder = this.remoteMode === 'CAN'
+                    ? '输入 CAN ID (如: 100 或 100,200)'
+                    : '输入 LIN 数据 (0-255, 最多6个, 逗号分隔)';
+                if (this.remoteIdInput) {
+                    this.remoteIdInput.placeholder = placeholder;
+                }
+                this.log(`远程控制模式: ${this.remoteMode}`);
+            });
+        });
+
+        // 开始/停止按钮
+        this.btnRemoteStart?.addEventListener('click', () => {
+            if (this.isRemoteRunning) {
+                this.stopRemoteMonitor();
+            } else {
+                this.startRemoteMonitor();
+            }
+        });
+
+        // 清空数据
+        this.btnRemoteClear?.addEventListener('click', () => {
+            if (confirm('确定清空所有数据?')) {
+                this.remoteData = [];
+                this.updateRemoteDataLog();
+            }
+        });
+
+        // 保存数据
+        this.btnRemoteSave?.addEventListener('click', () => {
+            this.saveRemoteData();
+        });
+    }
+
+    startRemoteMonitor() {
+        const input = this.remoteIdInput?.value?.trim() || '';
+
+        if (this.remoteMode === 'CAN') {
+            // CAN 模式
+            this.protocol.startCANMonitor(input);
+        } else {
+            // LIN 模式
+            if (!input) {
+                alert('请输入 LIN 数据');
+                return;
+            }
+            this.protocol.startLINMonitor(input);
+        }
+
+        this.isRemoteRunning = true;
+        this.updateRemoteUI();
+        this.log(`远程控制已启动: ${this.remoteMode}`);
+    }
+
+    stopRemoteMonitor() {
+        this.protocol.stopRemoteMonitor();
+        this.isRemoteRunning = false;
+        this.updateRemoteUI();
+        this.log('远程控制已停止');
+    }
+
+    updateRemoteUI() {
+        if (this.btnRemoteStart) {
+            this.btnRemoteStart.innerHTML = this.isRemoteRunning
+                ? '<span class="btn-icon">⏹️</span> 停止'
+                : '<span class="btn-icon">▶️</span> 开始';
+        }
+        if (this.remoteStatus) {
+            this.remoteStatus.textContent = this.isRemoteRunning ? '运行中' : '未运行';
+            this.remoteStatus.classList.toggle('running', this.isRemoteRunning);
+        }
+    }
+
+    addRemoteData(data) {
+        const timestamp = new Date().toLocaleTimeString();
+        this.remoteData.push(`[${timestamp}] ${data}`);
+        this.updateRemoteDataLog();
+    }
+
+    updateRemoteDataLog() {
+        if (!this.remoteDataLog) return;
+
+        if (this.remoteData.length === 0) {
+            this.remoteDataLog.innerHTML = '<div class="log-placeholder">监控数据将显示在这里...</div>';
+        } else {
+            this.remoteDataLog.innerHTML = this.remoteData
+                .map((item, i) => `<div class="log-item">${i + 1}) ${item}</div>`)
+                .join('');
+            // 滚动到底部
+            this.remoteDataLog.scrollTop = this.remoteDataLog.scrollHeight;
+        }
+    }
+
+    saveRemoteData() {
+        if (this.remoteData.length === 0) {
+            alert('没有数据可保存');
+            return;
+        }
+
+        const content = this.remoteData.join('\n');
+        const filename = `${this.remoteMode}-${Date.now()}.txt`;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        this.log(`数据已保存: ${filename}`);
     }
 
     renderLedConfigGrid() {

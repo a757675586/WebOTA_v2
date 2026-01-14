@@ -428,6 +428,46 @@
                                     🔄 恢复出厂设置
                                 </button>
                             </div>
+
+                            <!-- 远程控制 -->
+                            <div class="factory-section mt-lg">
+                                <div class="section-title">📡 远程控制 (CAN/LIN)</div>
+
+                                <!-- 模式选择 -->
+                                <div class="remote-control-header">
+                                    <div class="radio-group">
+                                        <label class="radio-card">
+                                            <input type="radio" name="remoteMode" value="CAN" checked>
+                                            <span class="radio-label">CAN</span>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="remoteMode" value="LIN">
+                                            <span class="radio-label">LIN</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- 输入和控制 -->
+                                <div class="remote-control-input mt-md">
+                                    <input type="text" id="remoteIdInput" placeholder="输入 CAN ID (如: 100 或 100,200)">
+                                    <button class="btn btn-primary" id="btnRemoteStart">
+                                        <span class="btn-icon">▶️</span>
+                                        开始
+                                    </button>
+                                </div>
+
+                                <!-- 数据操作按钮 -->
+                                <div class="remote-control-actions mt-sm">
+                                    <button class="btn btn-sm btn-outline" id="btnRemoteClear">清空数据</button>
+                                    <button class="btn btn-sm btn-outline" id="btnRemoteSave">保存数据</button>
+                                    <span class="remote-status" id="remoteStatus">未运行</span>
+                                </div>
+
+                                <!-- 数据显示区 -->
+                                <div class="remote-data-log" id="remoteDataLog">
+                                    <div class="log-placeholder">监控数据将显示在这里...</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
