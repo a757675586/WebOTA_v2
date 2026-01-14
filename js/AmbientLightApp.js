@@ -228,47 +228,6 @@ class AmbientLightApp {
         this.isRendering = false; // 渲染循环状态
     }
 
-    bindRemoteControlEvents() {
-        // ... (保持模式选择代码不变) ...
-        document.querySelectorAll('input[name="remoteMode"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                this.remoteMode = e.target.value;
-                const placeholder = this.remoteMode === 'CAN'
-                    ? '输入 CAN ID (如: 100 或 100,200)'
-                    : '输入 LIN 数据 (0-255, 最多6个, 逗号分隔)';
-                if (this.remoteIdInput) {
-                    this.remoteIdInput.placeholder = placeholder;
-                }
-                this.log(`远程控制模式: ${this.remoteMode}`);
-            });
-        });
-
-        // 开始/停止按钮
-        this.btnRemoteStart?.addEventListener('click', () => {
-            if (this.isRemoteRunning) {
-                this.stopRemoteMonitor();
-            } else {
-                this.startRemoteMonitor();
-            }
-        });
-
-        // 清空数据
-        this.btnRemoteClear?.addEventListener('click', () => {
-            if (confirm('确定清空所有数据?')) {
-                this.remoteData = [];
-                this.remoteDataQueue = [];
-                if (this.remoteDataLog) {
-                    this.remoteDataLog.innerHTML = '<div class="log-placeholder">监控数据将显示在这里...</div>';
-                }
-            }
-        });
-
-        // 保存数据
-        this.btnRemoteSave?.addEventListener('click', () => {
-            this.saveRemoteData();
-        });
-    }
-
     startRemoteMonitor() {
         const input = this.remoteIdInput?.value?.trim() || '';
 
