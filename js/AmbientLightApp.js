@@ -129,6 +129,12 @@ class AmbientLightApp {
             this.separateChannels.classList.toggle('hidden', this.isSyncToggleOn);
         }
 
+        // 恢复自定义通道控制可见性
+        if (this.customChannelControls) {
+            const isCustom = this.selectedMultiIndex === this.multiPresets.length - 1;
+            this.customChannelControls.classList.toggle('hidden', !isCustom);
+        }
+
         // 恢复颜色选择器
         if (this.colorPicker) {
             const hex = `#${((1 << 24) + (this.currentColor.r << 16) + (this.currentColor.g << 8) + this.currentColor.b).toString(16).slice(1).toUpperCase()}`;
@@ -172,6 +178,7 @@ class AmbientLightApp {
         this.separateChannels = document.getElementById('separateChannels');
         this.multiPresetsContainer = document.getElementById('multiPresets');
         this.dynamicPresetsContainer = document.getElementById('dynamicPresets');
+        this.customChannelControls = document.getElementById('customChannelControls');
         this.btnClearMulti = document.getElementById('btnClearMulti');
         this.btnApplyMulti = document.getElementById('btnApplyMulti');
 
@@ -567,8 +574,18 @@ class AmbientLightApp {
         this.selectedMultiIndex = index;
         this.log(`选择多色方案: ${preset.name}`);
 
-        // 发送多色主题命令 (索引 + 1)
-        this.protocol.setMultiTheme(index + 1);
+        // 判断是否是"自定义"预设 (最后一个)
+        const isCustom = index === this.multiPresets.length - 1;
+
+        // 显示/隐藏通道颜色控制区域
+        if (this.customChannelControls) {
+            this.customChannelControls.classList.toggle('hidden', !isCustom);
+        }
+
+        // 发送多色主题命令 (索引 + 1)，自定义模式不发送主题命令
+        if (!isCustom) {
+            this.protocol.setMultiTheme(index + 1);
+        }
         this.saveState();
     }
 
