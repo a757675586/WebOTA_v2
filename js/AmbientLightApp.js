@@ -155,7 +155,9 @@ class AmbientLightApp {
         // 同步模式切换
         this.syncToggle?.addEventListener('change', (e) => {
             const isSync = e.target.checked;
-            // Label now static in switch-card
+            if (this.syncModeLabel) {
+                this.syncModeLabel.textContent = isSync ? '同步模式' : '独立模式';
+            }
             this.syncChannels.classList.toggle('hidden', !isSync);
             this.separateChannels.classList.toggle('hidden', isSync);
             this.protocol.setSyncMode(isSync);
@@ -165,7 +167,9 @@ class AmbientLightApp {
         // 动态/静态模式切换
         this.dynamicToggle?.addEventListener('change', (e) => {
             const isDynamic = e.target.checked;
-            // Label now static in switch-card
+            if (this.dynamicModeLabel) {
+                this.dynamicModeLabel.textContent = isDynamic ? '动态模式' : '静态模式';
+            }
             this.log(`切换模式: ${isDynamic ? '动态' : '静态'}`);
             this.protocol.setDynamicMode(isDynamic);
         });

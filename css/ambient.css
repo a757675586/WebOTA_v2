@@ -287,7 +287,9 @@
     justify-content: space-between;
     align-items: center;
     padding: var(--space-md) var(--space-lg);
-    background: var(--bg-secondary);
+    background: var(--bg-elevated);
+    /* Lighter than card background */
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
     margin-bottom: var(--space-sm);
     transition: background var(--transition-fast);
