@@ -433,41 +433,53 @@ class AmbientLightApp {
     parseFactoryConfig(text) {
         try {
             const length = parseInt(text.substring(3, 5), 16);
+            this.log(`工厂配置响应长度: ${length}, 原始数据: ${text}`);
+
             if (text.length < (length + 3) * 2) {
                 this.log('工厂配置数据不完整', 'warning');
                 return;
             }
 
+            // 读取一个字节 (2 hex 字符)
             let index = 5;
             const readByte = () => {
-                const val = parseInt(text.substring(index, index + 2), 16);
+                const hex = text.substring(index, index + 2);
+                const val = parseInt(hex, 16);
+                this.log(`  [${index}] 读取: ${hex} = ${val}`);
                 index += 2;
                 return val;
             };
 
-            // 解析 LED 配置
-            const config = {
-                zones: [
-                    { count: readByte(), ltr: readByte() === 0 }, // 主驾
-                    { count: readByte(), ltr: readByte() === 0 }, // 副驾
-                    { count: readByte(), ltr: readByte() === 0 }, // 左前
-                    { count: readByte(), ltr: readByte() === 0 }, // 右前
-                    { count: readByte(), ltr: readByte() === 0 }, // 左后
-                    { count: readByte(), ltr: readByte() === 0 }, // 右后
-                ],
-                isMic: readByte() === 0,
-                sensitivity: readByte(),
-                features: {
-                    welcome: readByte() === 1,
-                    door: readByte() === 1,
-                    speed: readByte() === 1,
-                    turn: readByte() === 1,
-                    ac: readByte() === 1,
-                    crash: readByte() === 1
-                }
-            };
+            // 按顺序解析 6 个区域 (每个区域: 灯珠数 + 方向)
+            const zones = [];
+            const zoneNames = ['主驾', '副驾', '左前', '右前', '左后', '右后'];
+            for (let i = 0; i < 6; i++) {
+                const count = readByte();
+                const dirFlag = readByte();
+                const ltr = dirFlag === 0;  // 0 = 左到右, 1 = 右到左
+                zones.push({ count, ltr });
+                this.log(`  区域[${zoneNames[i]}]: 灯数=${count}, 方向=${ltr ? '左→右' : '右→左'}`);
+            }
 
-            this.log('收到工厂配置: ' + JSON.stringify(config));
+            // 解析音源和灵敏度
+            const micFlag = readByte();
+            const isMic = micFlag === 0;  // 0 = 麦克风, 1 = 原车
+            const sensitivity = readByte();
+            this.log(`  音源: ${isMic ? '麦克风' : '原车'}, 灵敏度: ${sensitivity}档`);
+
+            // 解析高级功能 (6 个开关)
+            const features = {
+                welcome: readByte() === 1,
+                door: readByte() === 1,
+                speed: readByte() === 1,
+                turn: readByte() === 1,
+                ac: readByte() === 1,
+                crash: readByte() === 1
+            };
+            this.log(`  高级功能: ${JSON.stringify(features)}`);
+
+            const config = { zones, isMic, sensitivity, features };
+            this.log('工厂配置解析完成');
             this.applyFactoryConfig(config);
 
         } catch (e) {
