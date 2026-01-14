@@ -78,7 +78,9 @@ class AmbientLightApp {
         this.connectionStatus = document.getElementById('connectionStatus');
         this.deviceName = document.getElementById('deviceName');
         this.deviceStatus = document.getElementById('deviceStatus');
+        this.deviceStatus = document.getElementById('deviceStatus');
         this.deviceCard = document.getElementById('deviceCard');
+        this.deviceDetails = document.getElementById('deviceDetails');
 
         // 模式切换
         this.modeTabs = document.getElementById('modeTabs');
@@ -242,6 +244,7 @@ class AmbientLightApp {
         this.deviceName.textContent = device?.name || '未知设备';
         this.deviceStatus.textContent = '已连接';
         this.deviceCard.classList.add('connected');
+        if (this.deviceDetails) this.deviceDetails.classList.remove('hidden');
 
         this.btnScan.style.display = 'none';
         this.btnDisconnect.style.display = 'flex';
@@ -269,6 +272,7 @@ class AmbientLightApp {
         this.deviceName.textContent = '未选择设备';
         this.deviceStatus.textContent = '请扫描并连接设备';
         this.deviceCard.classList.remove('connected');
+        if (this.deviceDetails) this.deviceDetails.classList.add('hidden');
 
         this.btnScan.style.display = 'flex';
         this.btnDisconnect.style.display = 'none';

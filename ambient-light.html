@@ -77,6 +77,22 @@
                                     <div class="device-status" id="deviceStatus">请扫描并连接设备</div>
                                 </div>
                             </div>
+
+                            <!-- 设备详细信息 (连接后显示) -->
+                            <div class="device-details hidden" id="deviceDetails">
+                                <div class="detail-row">
+                                    <span class="detail-label">车型</span>
+                                    <span class="detail-value" id="detailCarModel">-</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">硬件</span>
+                                    <span class="detail-value" id="detailHwVersion">-</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">软件</span>
+                                    <span class="detail-value" id="detailSwVersion">-</span>
+                                </div>
+                            </div>
                             <button class="btn btn-outline btn-lg" id="btnDisconnect" style="display: none;">
                                 <span class="btn-icon">⏏️</span>
                                 断开连接

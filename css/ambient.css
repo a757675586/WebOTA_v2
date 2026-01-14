@@ -541,6 +541,30 @@
         color: var(--text-muted);
     }
 
+    .device-details {
+        margin-top: var(--space-md);
+        padding-top: var(--space-md);
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: var(--font-size-xs);
+    }
+
+    .detail-label {
+        color: var(--text-secondary);
+    }
+
+    .detail-value {
+        color: var(--text-primary);
+        font-family: 'Monaco', 'Consolas', monospace;
+    }
+
     /* ==========================================================================
    Multi-Color Channel
    ========================================================================== */
