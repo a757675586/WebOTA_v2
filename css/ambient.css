@@ -327,9 +327,18 @@
 }
 
 /* Rectangular shape for Mode Presets (Multi/Dynamic) */
+#multiPresets,
+#dynamicPresets {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+    padding: var(--space-md);
+}
+
 #multiPresets .color-swatch,
 #dynamicPresets .color-swatch {
-    width: 86px;
+    width: 100%;
+    height: 56px;
     border-radius: var(--radius-md);
 }
 
