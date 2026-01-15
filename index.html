@@ -21,16 +21,26 @@
         <!-- 顶部导航栏 -->
         <header class="navbar">
             <div class="navbar-brand">
-                <span class="logo">⚡</span>
+                <span class="logo">💡</span>
                 <div class="brand-text">
-                    <h1>Web BLE OTA</h1>
+                    <h1>CarLight</h1>
                     <span class="version">v1.0.0</span>
                 </div>
             </div>
-            <div class="navbar-status">
-                <a href="ambient-light.html" class="btn btn-primary" style="margin-right: 1rem; text-decoration: none;">
-                    💡 氛围灯控制
+
+            <!-- 页面切换 Tabs -->
+            <nav class="page-tabs">
+                <a href="ambient-light.html" class="page-tab">
+                    <span class="page-tab-icon">🎨</span>
+                    <span>氛围灯控制</span>
                 </a>
+                <a href="index.html" class="page-tab active">
+                    <span class="page-tab-icon">🚀</span>
+                    <span>OTA升级</span>
+                </a>
+            </nav>
+
+            <div class="navbar-status">
                 <div class="status-badge" id="statusBadge">
                     <span class="status-dot"></span>
                     <span class="status-label" id="connectionStatus">未连接</span>

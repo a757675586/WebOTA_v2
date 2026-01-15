@@ -62,6 +62,72 @@
 }
 
 /* ==========================================================================
+   Page Tabs (Cross-page Navigation)
+   ========================================================================== */
+.page-tabs {
+    display: flex;
+    gap: var(--space-xs);
+    padding: var(--space-xs);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-full);
+}
+
+.page-tab {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    background: transparent;
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+}
+
+.page-tab:hover {
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+}
+
+.page-tab.active {
+    color: white;
+    background: linear-gradient(135deg, var(--primary), var(--accent-purple));
+    box-shadow: var(--shadow-sm);
+}
+
+.page-tab-icon {
+    font-size: var(--font-size-base);
+}
+
+@media (max-width: 768px) {
+    .page-tabs {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        justify-content: center;
+        border-radius: 0;
+        padding: var(--space-sm);
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur));
+        border-top: 1px solid var(--glass-border);
+        z-index: 100;
+    }
+
+    .page-tab {
+        flex: 1;
+        justify-content: center;
+        padding: var(--space-md);
+    }
+
+    .ambient-app {
+        padding-bottom: 80px;
+    }
+}
+
+/* ==========================================================================
    Footer Navigation
    ========================================================================== */
 .ambient-footer {
