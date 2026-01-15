@@ -4,7 +4,7 @@
 
 **车载氛围灯控制与固件升级 Web 应用** - 基于 Web Bluetooth API
 
-[![GitHub Pages](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://a757675586.github.io/WebOTA/)
+[![GitHub Pages](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://a757675586.github.io/WebOTA_v2/)
 
 </div>
 
@@ -44,7 +44,7 @@
 部署完成后访问：
 
 ```
-https://a757675586.github.io/WebOTA/
+https://a757675586.github.io/WebOTA_v2/
 ```
 
 ---
