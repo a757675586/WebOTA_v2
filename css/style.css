@@ -645,26 +645,22 @@ body::before {
 
     /* Navbar compact mode */
     .navbar {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: var(--space-sm);
         padding: var(--space-sm) var(--space-md);
     }
 
     .navbar-brand {
-        order: 1;
+        flex-shrink: 0;
     }
 
-    .navbar-brand .brand-text .version {
+    /* Hide brand text on mobile, keep only logo */
+    .navbar-brand .brand-text {
         display: none;
     }
 
-    .brand-text h1 {
-        font-size: 1.1rem;
-    }
-
-    /* Page tabs inline with navbar */
+    /* Page tabs compact */
     .page-tabs {
-        order: 2;
         flex: 1;
         justify-content: center;
         background: transparent;
@@ -675,6 +671,11 @@ body::before {
     .page-tab {
         padding: 0.5rem 0.75rem;
         font-size: 0.75rem;
+    }
+
+    /* Hide tab text on mobile, show only icons */
+    .page-tab span:not(.page-tab-icon) {
+        display: none;
     }
 
     .navbar-status {
@@ -739,16 +740,12 @@ body::before {
 
 /* Extra small screens */
 @media (max-width: 480px) {
-    .page-tab span:not(.page-tab-icon) {
-        display: none;
-    }
-
-    .navbar-brand .brand-text {
-        display: none;
-    }
-
     .navbar-brand .logo {
         font-size: 1.5rem;
+    }
+
+    .page-tab {
+        padding: 0.4rem;
     }
 }
 
