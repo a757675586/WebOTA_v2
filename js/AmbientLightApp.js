@@ -3,10 +3,10 @@
  * 整合 BLE 连接、颜色选择、灯光控制等功能
  */
 
-import bleService from './BleService.js?v=13';
-import { ColorPicker } from './ColorPicker.js?v=13';
-import { LightController } from './LightController.js?v=13';
-import { AmbientProtocol, ZONE, SWITCH_STATE, CHANNEL, cmdSingleColor, cmdBrightness, cmdLightSwitch, cmdDynamicMode, cmdMultiTheme, cmdSyncMode, cmdDiyChannel } from './AmbientProtocol.js?v=13';
+import bleService from './BleService.js?v=14';
+import { ColorPicker } from './ColorPicker.js?v=14';
+import { LightController } from './LightController.js?v=14';
+import { AmbientProtocol, ZONE, SWITCH_STATE, CHANNEL, cmdSingleColor, cmdBrightness, cmdLightSwitch, cmdDynamicMode, cmdMultiTheme, cmdSyncMode, cmdDiyChannel } from './AmbientProtocol.js?v=14';
 
 class AmbientLightApp {
     constructor() {
@@ -345,13 +345,25 @@ class AmbientLightApp {
         this.log(`数据已保存: ${filename} (共 ${this.remoteData.length} 行)`);
     }
 
-    updateRemoteUI() {
+    initColorPicker() {
+        // 检查 ColorPicker 是否存在
+        if (typeof ColorPicker === 'undefined') {
+            return;
+        }
+
         this.colorPicker = new ColorPicker('colorPickerCanvas', 'colorIndicator', {
             onChange: (rgb, hex) => {
                 this.currentColor = rgb;
                 this.updateColorPreview(hex);
-                // Debounce save? simplified for now
                 this.saveState();
+
+                // 发送 BLE 指令 (防抖)
+                if (this.bleService && this.bleService.isConnected()) {
+                    if (this.colorDebounceTimer) clearTimeout(this.colorDebounceTimer);
+                    this.colorDebounceTimer = setTimeout(() => {
+                        this.protocol.setColor(rgb.r, rgb.g, rgb.b);
+                    }, 100);
+                }
             },
             onSelect: (rgb, hex) => {
                 console.log('[ColorPicker] 选择颜色:', hex);
@@ -1318,49 +1330,7 @@ class AmbientLightApp {
         this.log(`数据已保存: ${filename} (共 ${this.remoteData.length} 行)`);
     }
 
-    updateRemoteUI() {
-        if (this.btnRemoteStart) {
-            this.btnRemoteStart.innerHTML = this.isRemoteRunning
-                ? '<span class="btn-icon">⏹️</span> 停止'
-                : '<span class="btn-icon">▶️</span> 开始';
-        }
-        if (this.remoteStatus) {
-            this.remoteStatus.textContent = this.isRemoteRunning ? '运行中' : '未运行';
-            this.remoteStatus.classList.toggle('running', this.isRemoteRunning);
-        }
-    }
-
-    initColorPicker() {
-        // 检查 ColorPicker 是否存在
-        if (typeof ColorPicker === 'undefined') {
-            console.warn('ColorPicker library not loaded');
-            return;
-        }
-
-        this.colorPicker = new ColorPicker('colorPickerCanvas', 'colorIndicator', {
-            onChange: (rgb, hex) => {
-                this.currentColor = rgb;
-                this.updateColorPreview(hex);
-                this.saveState();
-
-                if (this.bleService && this.bleService.isConnected()) {
-                    if (this.colorDebounceTimer) clearTimeout(this.colorDebounceTimer);
-                    this.colorDebounceTimer = setTimeout(() => {
-                        this.protocol.setColor(rgb.r, rgb.g, rgb.b);
-                    }, 100);
-                }
-            },
-            onSelect: (rgb, hex) => {
-                console.log('[ColorPicker] 选择颜色:', hex);
-            }
-        });
-    }
-
-    updateColorPreview(hex) {
-        if (this.colorPreview) {
-            this.colorPreview.style.backgroundColor = hex;
-        }
-    }
+    // ============ LED 区域配置 (仅工厂模式用) ============
 
     renderLedConfigGrid() {
         if (!this.ledConfigGrid) return;
