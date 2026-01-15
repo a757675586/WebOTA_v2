@@ -642,20 +642,113 @@ body::before {
 
 /* ============== 响应式 ============== */
 @media (max-width: 768px) {
+
+    /* Navbar compact mode */
     .navbar {
-        padding: var(--space-md);
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .navbar-brand {
+        order: 1;
+    }
+
+    .navbar-brand .brand-text .version {
+        display: none;
     }
 
     .brand-text h1 {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
 
+    /* Page tabs inline with navbar */
+    .page-tabs {
+        order: 2;
+        flex: 1;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        padding: 0;
+    }
+
+    .page-tab {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .navbar-status {
+        order: 3;
+    }
+
+    .navbar-status .status-badge {
+        padding: 0.35rem 0.5rem;
+    }
+
+    .navbar-status .status-label {
+        display: none;
+    }
+
+    /* Main content stacks vertically */
     .main-content {
+        grid-template-columns: 1fr;
         padding: var(--space-md);
+        gap: var(--space-md);
     }
 
     .card-body {
         padding: var(--space-md);
+    }
+
+    .card-header {
+        padding: var(--space-md);
+    }
+
+    /* Connection actions stack */
+    .connection-actions {
+        flex-direction: column;
+    }
+
+    .connection-actions .btn {
+        width: 100%;
+    }
+
+    /* Buttons full width */
+    .btn {
+        min-height: 44px;
+    }
+
+    .btn-xl {
+        padding: var(--space-md);
+    }
+
+    /* File drop zone compact */
+    .file-drop-zone {
+        padding: var(--space-md);
+    }
+
+    .drop-icon {
+        font-size: 2rem;
+    }
+
+    /* Log area compact */
+    .log-scroll {
+        max-height: 200px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .page-tab span:not(.page-tab-icon) {
+        display: none;
+    }
+
+    .navbar-brand .brand-text {
+        display: none;
+    }
+
+    .navbar-brand .logo {
+        font-size: 1.5rem;
     }
 }
 

@@ -102,32 +102,147 @@
     font-size: var(--font-size-base);
 }
 
+/* ==========================================================================
+   Mobile Responsive Styles
+   ========================================================================== */
 @media (max-width: 768px) {
+
+    /* Navbar adjustments for mobile */
+    .ambient-navbar {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .ambient-navbar .brand {
+        order: 1;
+    }
+
+    .ambient-navbar .brand-text {
+        display: none;
+        /* Hide brand text on mobile */
+    }
+
+    .ambient-navbar .nav-actions {
+        order: 3;
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .ambient-navbar .nav-actions .status-badge {
+        display: none;
+        /* Hide status on very small screens */
+    }
+
+    /* Page tabs stay at top on mobile but simplified */
     .page-tabs {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        order: 2;
+        flex: 1;
         justify-content: center;
-        border-radius: 0;
-        padding: var(--space-sm);
-        background: rgba(10, 10, 30, 0.95);
-        backdrop-filter: blur(var(--glass-blur));
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
-        z-index: 100;
+        background: transparent;
+        border: none;
+        padding: 0;
     }
 
     .page-tab {
-        flex: 1;
-        justify-content: center;
+        padding: var(--space-sm) var(--space-md);
+        font-size: var(--font-size-xs);
+    }
+
+    .page-tab-icon {
+        font-size: var(--font-size-sm);
+    }
+
+    /* Main container adjustments */
+    .ambient-container {
         padding: var(--space-md);
     }
 
+    /* Mode tabs adjustments */
+    .mode-tabs {
+        padding: var(--space-xs);
+        gap: var(--space-xs);
+        margin-bottom: var(--space-md);
+    }
+
+    .mode-tab {
+        padding: var(--space-sm);
+        font-size: var(--font-size-xs);
+    }
+
+    .mode-tab-icon {
+        font-size: var(--font-size-base);
+    }
+
+    /* Card adjustments */
+    .card {
+        margin-bottom: var(--space-md);
+    }
+
+    .card-body {
+        padding: var(--space-md);
+    }
+
+    /* Color swatches - larger touch targets */
+    .color-swatch {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    /* Preset grid - 3 columns on mobile */
+    .color-grid#multiPresets,
+    .color-grid#dynamicPresets {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    /* Bottom padding for footer buttons */
     .ambient-app {
-        padding-bottom: 80px;
+        padding-bottom: 70px;
+    }
+
+    /* Zone controls stacked */
+    .zone-controls {
+        gap: var(--space-md);
+    }
+
+    /* Factory panel adjustments */
+    .factory-row {
+        grid-template-columns: 1fr;
+    }
+
+    .led-config-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Button improvements */
+    .btn {
+        min-height: 44px;
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .btn-primary {
+        width: 100%;
+    }
+}
+
+/* Extra small screens (< 480px) */
+@media (max-width: 480px) {
+    .page-tab span:not(.page-tab-icon) {
+        display: none;
+        /* Hide text, show only icons */
+    }
+
+    .page-tab {
+        padding: var(--space-sm);
+    }
+
+    .mode-tab span:not(.mode-tab-icon) {
+        font-size: 10px;
+    }
+
+    .color-grid#multiPresets,
+    .color-grid#dynamicPresets {
+        grid-template-columns: repeat(2, 1fr) !important;
     }
 }
 
