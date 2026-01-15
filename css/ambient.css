@@ -107,6 +107,34 @@
 /* ==========================================================================
    Mobile Responsive Styles
    ========================================================================== */
+
+/* Factory Panel Card Header - prevent overflow */
+#factoryPanel .card-header {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+#factoryPanel .card-header h2 {
+    flex: 1;
+    min-width: 0;
+}
+
+#factoryPanel .card-header .btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* Ensure all cards don't overflow on mobile */
+.card {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.card-header {
+    max-width: 100%;
+    overflow: hidden;
+}
+
 @media (max-width: 768px) {
 
     /* Navbar adjustments for mobile */
@@ -225,6 +253,47 @@
         gap: var(--space-md);
     }
 
+    /* ============ CRITICAL: Fix Factory Panel Overflow ============ */
+
+    /* Reduce container padding on mobile to prevent overflow */
+    .ambient-container {
+        padding: var(--space-sm);
+    }
+
+    /* Reduce main grid gap */
+    .ambient-main {
+        gap: var(--space-sm);
+    }
+
+    /* Fix sidebar and content to not overflow */
+    .ambient-sidebar,
+    .ambient-content {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    /* Reduce card padding on mobile */
+    .card {
+        padding: var(--space-md);
+        margin-bottom: var(--space-sm);
+    }
+
+    .card-body {
+        padding: 0;
+    }
+
+    /* Factory Panel specific - ensure full width display */
+    #factoryPanel {
+        width: 100%;
+        max-width: calc(100vw - 16px);
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    #factoryPanel .card-header {
+        padding: 0 0 var(--space-md) 0;
+    }
+
     /* Factory panel adjustments */
     .factory-row {
         grid-template-columns: 1fr;
@@ -268,7 +337,7 @@
 
     /* Factory section - full width, better spacing */
     .factory-section {
-        padding: var(--space-md);
+        padding: var(--space-sm);
         margin-bottom: var(--space-md);
     }
 
@@ -437,7 +506,7 @@
     }
 }
 
-/* Extra small screens (< 480px) */
+/* Extra small screens (< 480px) - Most Android phones */
 @media (max-width: 480px) {
     .page-tab span:not(.page-tab-icon) {
         display: none;
@@ -489,6 +558,285 @@
     .remote-data-log {
         height: 120px;
         font-size: 10px;
+    }
+}
+
+/* ==========================================================================
+   Android Device Specific Breakpoints
+   Common Android phone widths: 360px, 375px, 390px, 412px, 428px
+   ========================================================================== */
+
+/* Small Android phones (Redmi Note, Samsung A series, etc.) - 360px width */
+@media (max-width: 360px) {
+
+    /* Reduce container padding */
+    .ambient-container {
+        padding: var(--space-sm);
+    }
+
+    /* Smaller card padding */
+    .card {
+        padding: var(--space-md);
+    }
+
+    .card-body {
+        padding: var(--space-sm);
+    }
+
+    /* Navbar logo smaller */
+    .ambient-navbar .logo-img {
+        height: 36px;
+    }
+
+    /* Bottom nav more compact */
+    .bottom-nav-item {
+        min-height: 52px;
+        padding: 6px 8px;
+    }
+
+    .bottom-nav-icon {
+        font-size: 20px;
+    }
+
+    .bottom-nav-label {
+        font-size: 9px;
+    }
+
+    /* Mode tabs - ultra compact */
+    .mode-tabs {
+        padding: 2px;
+        gap: 2px;
+    }
+
+    .mode-tab {
+        padding: var(--space-xs);
+    }
+
+    .mode-tab-icon {
+        font-size: var(--font-size-sm);
+    }
+
+    /* Color picker smaller */
+    .color-picker-canvas {
+        height: 40px;
+    }
+
+    .color-preview-swatch {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* Preset grids - 2 columns */
+    .color-grid#multiPresets,
+    .color-grid#dynamicPresets {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: var(--space-sm) !important;
+    }
+
+    .color-grid#multiPresets .color-swatch,
+    .color-grid#dynamicPresets .color-swatch {
+        height: 48px;
+    }
+
+    .preset-name {
+        font-size: 8px;
+        padding: 4px 2px 2px;
+    }
+
+    /* Switch card more compact */
+    .switch-card {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    /* Slider label smaller */
+    .slider-label {
+        min-width: 50px;
+        font-size: var(--font-size-xs);
+    }
+
+    /* Factory mode - single column */
+    .factory-row {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+
+    .led-config-item {
+        padding: var(--space-sm);
+        min-height: 100px;
+    }
+
+    .led-config-item .zone-icon {
+        font-size: 24px;
+    }
+
+    .led-config-item .zone-name {
+        font-size: var(--font-size-xs);
+    }
+
+    .stepper-control .stepper-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .stepper-control .stepper-input {
+        width: 50px;
+        min-height: 40px;
+        font-size: var(--font-size-base);
+    }
+
+    .direction-toggle .dir-btn {
+        min-height: 36px;
+        font-size: var(--font-size-xs);
+        padding: var(--space-xs);
+    }
+}
+
+/* Standard Android phones (Xiaomi, Samsung S, Pixel) - 390-412px width */
+@media (min-width: 361px) and (max-width: 412px) {
+    .ambient-container {
+        padding: var(--space-md);
+    }
+
+    /* Slightly larger touch targets */
+    .btn {
+        min-height: 46px;
+    }
+
+    .switch-card {
+        min-height: 50px;
+    }
+
+    /* 2-column LED config */
+    .led-config-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
+    }
+
+    .led-config-item {
+        min-height: 110px;
+    }
+
+    /* Color presets 3 columns */
+    .color-grid#multiPresets,
+    .color-grid#dynamicPresets {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+/* Large Android phones (Galaxy S Ultra, Xiaomi Pro Max) - 412-480px width */
+@media (min-width: 413px) and (max-width: 480px) {
+    .ambient-container {
+        padding: var(--space-md);
+    }
+
+    /* More spacious layout */
+    .card {
+        padding: var(--space-lg);
+    }
+
+    /* LED config 2 columns with more space */
+    .led-config-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+    }
+
+    .led-config-item {
+        min-height: 120px;
+        padding: var(--space-md);
+    }
+
+    /* Color presets 3 columns */
+    .color-grid#multiPresets,
+    .color-grid#dynamicPresets {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+
+    .color-grid#multiPresets .color-swatch,
+    .color-grid#dynamicPresets .color-swatch {
+        height: 56px;
+    }
+}
+
+/* Foldable/Tablet small screens - 480-600px width */
+@media (min-width: 481px) and (max-width: 600px) {
+    .ambient-main {
+        grid-template-columns: 1fr;
+    }
+
+    /* 2-column layout for some elements */
+    .led-config-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Color presets 4 columns */
+    .color-grid#multiPresets,
+    .color-grid#dynamicPresets {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    /* Advanced toggles 2 columns */
+    .advanced-toggles {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Landscape mode on phones */
+@media (max-height: 500px) and (orientation: landscape) {
+
+    /* Reduce vertical padding */
+    .ambient-navbar {
+        padding: var(--space-xs) var(--space-md);
+    }
+
+    .ambient-navbar .logo-img {
+        height: 32px;
+    }
+
+    .ambient-container {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .card {
+        padding: var(--space-md);
+        margin-bottom: var(--space-sm);
+    }
+
+    .card-header {
+        margin-bottom: var(--space-sm);
+    }
+
+    /* Horizontal layout for some sections */
+    .mode-tabs {
+        margin-bottom: var(--space-sm);
+    }
+
+    /* Color picker shorter */
+    .color-picker-canvas {
+        height: 36px;
+    }
+
+    /* Bottom nav thinner */
+    .bottom-nav {
+        padding-bottom: 0;
+    }
+
+    .bottom-nav-item {
+        min-height: 48px;
+        padding: 4px 8px;
+    }
+
+    .bottom-nav-icon {
+        font-size: 18px;
+    }
+
+    .bottom-nav-label {
+        font-size: 8px;
+    }
+
+    /* Reduce body padding for bottom nav */
+    .ambient-app {
+        padding-bottom: 52px;
     }
 }
 
