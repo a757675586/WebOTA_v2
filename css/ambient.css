@@ -68,8 +68,9 @@
     display: flex;
     gap: var(--space-xs);
     padding: var(--space-xs);
-    background: var(--bg-secondary);
+    background: rgba(0, 0, 0, 0.3);
     border-radius: var(--radius-full);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .page-tab {
@@ -79,7 +80,7 @@
     padding: var(--space-sm) var(--space-lg);
     font-size: var(--font-size-sm);
     font-weight: 500;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     background: transparent;
     border-radius: var(--radius-full);
@@ -87,14 +88,14 @@
 }
 
 .page-tab:hover {
-    color: var(--text-primary);
-    background: var(--bg-elevated);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .page-tab.active {
-    color: white;
-    background: linear-gradient(135deg, var(--primary), var(--accent-purple));
-    box-shadow: var(--shadow-sm);
+    color: #ffffff;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
 }
 
 .page-tab-icon {
@@ -110,9 +111,12 @@
         justify-content: center;
         border-radius: 0;
         padding: var(--space-sm);
-        background: var(--glass-bg);
+        background: rgba(10, 10, 30, 0.95);
         backdrop-filter: blur(var(--glass-blur));
-        border-top: 1px solid var(--glass-border);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
         z-index: 100;
     }
 
