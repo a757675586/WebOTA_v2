@@ -120,8 +120,10 @@ body::before {
     gap: var(--space-md);
 }
 
-.logo {
-    font-size: 2rem;
+.logo-img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
     filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
 }
 

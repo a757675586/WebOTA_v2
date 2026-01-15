@@ -42,8 +42,10 @@
     gap: var(--space-md);
 }
 
-.ambient-navbar .logo {
-    font-size: var(--font-size-2xl);
+.ambient-navbar .logo-img {
+    height: 48px;
+    width: auto;
+    object-fit: contain;
 }
 
 .ambient-navbar .brand-text h1 {
@@ -1138,7 +1140,9 @@ input[type="range"]::-moz-range-thumb:hover {
     text-align: center;
     padding: 6px 0;
     transition: all var(--transition-fast);
+    -webkit-appearance: textfield;
     -moz-appearance: textfield;
+    appearance: textfield;
     font-family: inherit;
 }
 
