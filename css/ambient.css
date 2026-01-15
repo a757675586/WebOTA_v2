@@ -109,13 +109,13 @@
 
     /* Navbar adjustments for mobile */
     .ambient-navbar {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: var(--space-sm);
         padding: var(--space-sm) var(--space-md);
     }
 
     .ambient-navbar .brand {
-        order: 1;
+        flex-shrink: 0;
     }
 
     .ambient-navbar .brand-text {
@@ -124,19 +124,26 @@
     }
 
     .ambient-navbar .nav-actions {
-        order: 3;
-        flex: 1;
-        justify-content: flex-end;
+        flex-shrink: 0;
     }
 
     .ambient-navbar .nav-actions .status-badge {
         display: none;
-        /* Hide status on very small screens */
+        /* Hide status on mobile */
     }
 
-    /* Page tabs stay at top on mobile but simplified */
+    .ambient-navbar .nav-actions .btn {
+        padding: var(--space-sm);
+        font-size: var(--font-size-xs);
+    }
+
+    .ambient-navbar .nav-actions .btn span:not(.btn-icon) {
+        display: none;
+        /* Hide button text, show only icon */
+    }
+
+    /* Page tabs - icon only on mobile */
     .page-tabs {
-        order: 2;
         flex: 1;
         justify-content: center;
         background: transparent;
@@ -145,20 +152,26 @@
     }
 
     .page-tab {
-        padding: var(--space-sm) var(--space-md);
+        padding: var(--space-sm);
         font-size: var(--font-size-xs);
     }
 
+    .page-tab span:not(.page-tab-icon) {
+        display: none;
+        /* Hide tab text, show only icons */
+    }
+
     .page-tab-icon {
-        font-size: var(--font-size-sm);
+        font-size: var(--font-size-base);
     }
 
     /* Main container adjustments */
     .ambient-container {
         padding: var(--space-md);
+        overflow-x: hidden;
     }
 
-    /* Mode tabs adjustments */
+    /* Mode tabs - icon only on mobile */
     .mode-tabs {
         padding: var(--space-xs);
         gap: var(--space-xs);
@@ -168,6 +181,11 @@
     .mode-tab {
         padding: var(--space-sm);
         font-size: var(--font-size-xs);
+    }
+
+    .mode-tab span:not(.mode-tab-icon) {
+        display: none;
+        /* Hide mode tab text, show only icons */
     }
 
     .mode-tab-icon {
