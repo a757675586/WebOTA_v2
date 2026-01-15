@@ -110,7 +110,7 @@ export class LightController {
         });
     }
 
-    updateZoneModeUI() {
+    async updateZoneModeUI() {
         if (this.zoneMode) {
             this.zoneModeLabel.textContent = '区域调节';
             this.unifiedZone.classList.add('hidden');
@@ -122,11 +122,13 @@ export class LightController {
         }
 
         // 发送区域模式切换命令
-        this.sendZoneMode(this.zoneMode);
+        await this.sendZoneMode(this.zoneMode);
 
         // 如果切换到统一模式，重新发送当前总亮度
+        // 添加短暂延迟，确保设备处理完模式切换后再接收亮度命令
         if (!this.zoneMode) {
-            this.sendBrightness(4, this.brightness.total);
+            await new Promise(r => setTimeout(r, 100));
+            await this.sendBrightness(4, this.brightness.total);
         }
     }
 

@@ -3,10 +3,10 @@
  * 整合 BLE 连接、颜色选择、灯光控制等功能
  */
 
-import bleService from './BleService.js?v=10';
-import { ColorPicker } from './ColorPicker.js?v=10';
-import { LightController } from './LightController.js?v=10';
-import { AmbientProtocol, ZONE, SWITCH_STATE, CHANNEL, cmdSingleColor, cmdBrightness, cmdLightSwitch, cmdDynamicMode, cmdMultiTheme, cmdSyncMode, cmdDiyChannel } from './AmbientProtocol.js?v=10';
+import bleService from './BleService.js?v=11';
+import { ColorPicker } from './ColorPicker.js?v=11';
+import { LightController } from './LightController.js?v=11';
+import { AmbientProtocol, ZONE, SWITCH_STATE, CHANNEL, cmdSingleColor, cmdBrightness, cmdLightSwitch, cmdDynamicMode, cmdMultiTheme, cmdSyncMode, cmdDiyChannel } from './AmbientProtocol.js?v=11';
 
 class AmbientLightApp {
     constructor() {
@@ -402,19 +402,19 @@ class AmbientLightApp {
         });
 
         // 动态/静态模式切换
-        this.dynamicToggle?.addEventListener('change', (e) => {
+        this.dynamicToggle?.addEventListener('change', async (e) => {
             const isDynamic = e.target.checked;
             if (this.dynamicModeLabel) {
                 this.dynamicModeLabel.textContent = isDynamic ? '动态模式' : '静态模式';
             }
             this.log(`切换模式: ${isDynamic ? '动态' : '静态'}`);
-            this.log(`切换模式: ${isDynamic ? '动态' : '静态'}`);
-            this.protocol.setDynamicMode(isDynamic);
+            await this.protocol.setDynamicMode(isDynamic);
 
             // 如果切换到静态模式，重新发送当前选中的主题
+            // 添加短暂延迟，确保设备处理完模式切换后再接收主题命令
             if (!isDynamic) {
-                // selectedMultiIndex 是 0-based，协议通常需要 1-based (取决于具体实现，参考 switchMode 中的用法)
-                this.protocol.setMultiTheme(this.selectedMultiIndex + 1);
+                await new Promise(r => setTimeout(r, 100));
+                await this.protocol.setMultiTheme(this.selectedMultiIndex + 1);
             }
 
             this.saveState();
