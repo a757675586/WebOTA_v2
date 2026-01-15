@@ -3,10 +3,10 @@
  * 整合 BLE 连接、颜色选择、灯光控制等功能
  */
 
-import bleService from './BleService.js?v=5';
-import { ColorPicker } from './ColorPicker.js?v=5';
-import { LightController } from './LightController.js?v=5';
-import { AmbientProtocol, ZONE, SWITCH_STATE, CHANNEL, cmdSingleColor, cmdBrightness, cmdLightSwitch, cmdDynamicMode, cmdMultiTheme, cmdSyncMode, cmdDiyChannel } from './AmbientProtocol.js?v=5';
+import bleService from './BleService.js?v=10';
+import { ColorPicker } from './ColorPicker.js?v=10';
+import { LightController } from './LightController.js?v=10';
+import { AmbientProtocol, ZONE, SWITCH_STATE, CHANNEL, cmdSingleColor, cmdBrightness, cmdLightSwitch, cmdDynamicMode, cmdMultiTheme, cmdSyncMode, cmdDiyChannel } from './AmbientProtocol.js?v=10';
 
 class AmbientLightApp {
     constructor() {
