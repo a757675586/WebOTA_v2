@@ -410,6 +410,13 @@ class AmbientLightApp {
             this.log(`切换模式: ${isDynamic ? '动态' : '静态'}`);
             this.log(`切换模式: ${isDynamic ? '动态' : '静态'}`);
             this.protocol.setDynamicMode(isDynamic);
+
+            // 如果切换到静态模式，重新发送当前选中的主题
+            if (!isDynamic) {
+                // selectedMultiIndex 是 0-based，协议通常需要 1-based (取决于具体实现，参考 switchMode 中的用法)
+                this.protocol.setMultiTheme(this.selectedMultiIndex + 1);
+            }
+
             this.saveState();
         });
 

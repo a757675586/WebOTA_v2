@@ -123,6 +123,11 @@ export class LightController {
 
         // 发送区域模式切换命令
         this.sendZoneMode(this.zoneMode);
+
+        // 如果切换到统一模式，重新发送当前总亮度
+        if (!this.zoneMode) {
+            this.sendBrightness(4, this.brightness.total);
+        }
     }
 
     setSwitchState(state) {
