@@ -241,6 +241,25 @@
     .btn-primary {
         width: 100%;
     }
+
+    /* Footer buttons - icon only on mobile */
+    .ambient-footer .btn {
+        flex-direction: column;
+        gap: var(--space-xs);
+        padding: var(--space-sm);
+        font-size: var(--font-size-xs);
+    }
+
+    /* Hide text after icon in footer buttons */
+    .ambient-footer .btn-icon {
+        font-size: var(--font-size-lg);
+    }
+
+    /* Preset grids - 3 columns on mobile for better touch targets */
+    .preset-grid,
+    .effect-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
 }
 
 /* Extra small screens (< 480px) */
