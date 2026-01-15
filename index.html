@@ -14,6 +14,8 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="css/style.css?v=9">
+    <!-- I18n -->
+    <script src="js/i18n.js"></script>
 </head>
 
 <body>
@@ -23,15 +25,20 @@
             <div class="navbar-brand">
                 <img src="images/applog.png" class="logo-img" alt="CKCP LAMP">
                 <div class="brand-text">
-                    <h1>CKCP LAMP</h1>
+                    <h1 data-i18n="brand_name">CKCP LAMP</h1>
                     <span class="version">v1.0.0</span>
                 </div>
             </div>
 
             <div class="navbar-status">
+                <button class="btn btn-text" id="btnLang" onclick="toggleLanguage()"
+                    style="margin-right: 15px; background: none; border: none; cursor: pointer; font-size: 1.2rem;"
+                    title="Switch Language">
+                    🌐 <span id="langText">EN</span>
+                </button>
                 <div class="status-badge" id="statusBadge">
                     <span class="status-dot"></span>
-                    <span class="status-label" id="connectionStatus">未连接</span>
+                    <span class="status-label" id="connectionStatus" data-i18n="status_disconnected">未连接</span>
                 </div>
             </div>
         </header>
@@ -44,21 +51,21 @@
                 <div class="card card-connection">
                     <div class="card-header">
                         <div class="card-icon">📡</div>
-                        <h2>设备连接</h2>
+                        <h2 data-i18n="card_device_conn">设备连接</h2>
                     </div>
                     <div class="card-body">
                         <div class="device-info-row">
-                            <span class="label">设备名称</span>
-                            <span class="value" id="deviceName">未选择</span>
+                            <span class="label" data-i18n="label_device_name">设备名称</span>
+                            <span class="value" id="deviceName" data-i18n="device_none">未选择</span>
                         </div>
                         <div class="connection-actions">
                             <button class="btn btn-primary btn-lg" id="btnScan">
                                 <span class="btn-icon">🔍</span>
-                                扫描设备
+                                <span data-i18n="scan_device">扫描设备</span>
                             </button>
                             <button class="btn btn-outline btn-lg" id="btnDisconnect" style="display: none;">
                                 <span class="btn-icon">⏏️</span>
-                                断开
+                                <span data-i18n="disconnect">断开</span>
                             </button>
                         </div>
                     </div>
@@ -68,28 +75,28 @@
                 <div class="card card-info">
                     <div class="card-header">
                         <div class="card-icon">📋</div>
-                        <h2>设备信息</h2>
+                        <h2 data-i18n="card_device_info">设备信息</h2>
                     </div>
                     <div class="card-body">
                         <div class="info-list">
                             <div class="info-row">
-                                <span class="info-label">硬件版本</span>
+                                <span class="info-label" data-i18n="label_hw_ver">硬件版本</span>
                                 <span class="info-value" id="hwVersion">-</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">软件版本</span>
+                                <span class="info-label" data-i18n="label_sw_ver">软件版本</span>
                                 <span class="info-value" id="swVersion">-</span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">车型</span>
+                                <span class="info-label" data-i18n="label_car_model">车型</span>
                                 <span class="info-value" id="carModel">-</span>
                             </div>
                             <div class="info-row highlight">
-                                <span class="info-label">MTU</span>
+                                <span class="info-label" data-i18n="label_ota_mtu">MTU</span>
                                 <span class="info-value" id="mtuValue">-</span>
                             </div>
                             <div class="info-row highlight">
-                                <span class="info-label">OTA 帧大小</span>
+                                <span class="info-label" data-i18n="label_ota_frame">OTA 帧大小</span>
                                 <span class="info-value" id="otaOffset">-</span>
                             </div>
                         </div>
@@ -103,7 +110,7 @@
                 <div class="card card-ota">
                     <div class="card-header">
                         <div class="card-icon">🚀</div>
-                        <h2>固件升级</h2>
+                        <h2 data-i18n="card_ota_upgrade">固件升级</h2>
                     </div>
                     <div class="card-body">
                         <!-- 文件选择区 -->
@@ -112,8 +119,8 @@
                             <div class="drop-content">
                                 <div class="drop-icon">📦</div>
                                 <div class="drop-text">
-                                    <span class="drop-title" id="fileName">拖放或点击选择固件</span>
-                                    <span class="drop-hint" id="fileSize">支持 .bin 格式</span>
+                                    <span class="drop-title" id="fileName" data-i18n="msg_drop_file">拖放或点击选择固件</span>
+                                    <span class="drop-hint" id="fileSize" data-i18n="msg_file_hint">支持 .bin 格式</span>
                                 </div>
                             </div>
                         </div>
@@ -122,14 +129,14 @@
                         <div class="ota-controls">
                             <button class="btn btn-success btn-xl" id="btnUpgrade" disabled>
                                 <span class="btn-icon">⬆️</span>
-                                开始升级
+                                <span data-i18n="btn_upgrade">开始升级</span>
                             </button>
                         </div>
 
                         <!-- 进度显示 -->
                         <div class="progress-wrapper">
                             <div class="progress-info">
-                                <span class="progress-label" id="upgradeStatus">等待中</span>
+                                <span class="progress-label" id="upgradeStatus" data-i18n="status_waiting">等待中</span>
                                 <span class="progress-percent" id="progressText">0%</span>
                             </div>
                             <div class="progress-track">
@@ -143,12 +150,12 @@
                 <div class="card card-log">
                     <div class="card-header">
                         <div class="card-icon">📝</div>
-                        <h2>操作日志</h2>
+                        <h2 data-i18n="card_log">操作日志</h2>
                         <button class="btn-icon-only" id="btnClearLog" title="清空日志">🗑️</button>
                     </div>
                     <div class="card-body">
                         <div class="log-scroll" id="logContainer">
-                            <div class="log-entry log-info">应用已就绪，请扫描设备开始连接</div>
+                            <div class="log-entry log-info" data-i18n="msg_log_ready">应用已就绪，请扫描设备开始连接</div>
                         </div>
                     </div>
                 </div>
@@ -160,11 +167,11 @@
     <nav class="bottom-nav">
         <a href="ambient-light.html" class="bottom-nav-item">
             <span class="bottom-nav-icon">🎨</span>
-            <span class="bottom-nav-label">氛围灯</span>
+            <span class="bottom-nav-label" data-i18n="nav_ambient">氛围灯</span>
         </a>
         <a href="index.html" class="bottom-nav-item active">
             <span class="bottom-nav-icon">🚀</span>
-            <span class="bottom-nav-label">OTA升级</span>
+            <span class="bottom-nav-label" data-i18n="nav_ota">OTA升级</span>
         </a>
     </nav>
 

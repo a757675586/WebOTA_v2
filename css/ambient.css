@@ -232,9 +232,10 @@
 
     .led-config-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
     }
 
-    /* Button improvements */
+    /* Button improvements - minimum 44px touch target */
     .btn {
         min-height: 44px;
         padding: var(--space-sm) var(--space-md);
@@ -262,6 +263,178 @@
     .effect-grid {
         grid-template-columns: repeat(3, 1fr) !important;
     }
+
+    /* ============ Factory Mode Mobile Enhancements ============ */
+
+    /* Factory section - full width, better spacing */
+    .factory-section {
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+    }
+
+    .factory-section .section-title {
+        font-size: var(--font-size-base);
+        margin-bottom: var(--space-md);
+    }
+
+    /* Input groups - stacked for mobile */
+    .factory-input-group {
+        margin-bottom: var(--space-md);
+    }
+
+    .factory-input-group label {
+        font-size: var(--font-size-sm);
+        margin-bottom: var(--space-xs);
+    }
+
+    .input-with-btn {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .input-with-btn input {
+        min-height: 44px;
+        font-size: 16px;
+        /* Prevent iOS zoom */
+        padding: var(--space-md);
+    }
+
+    .input-with-btn .btn {
+        width: 100%;
+    }
+
+    /* LED Config - 2 columns, larger items */
+    .led-config-item {
+        padding: var(--space-md);
+        min-height: 120px;
+    }
+
+    .led-config-item .zone-icon {
+        font-size: 28px;
+        margin-bottom: var(--space-sm);
+    }
+
+    .led-config-item .zone-name {
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        margin-bottom: var(--space-md);
+    }
+
+    /* Stepper controls - larger touch targets */
+    .stepper-control {
+        gap: var(--space-md);
+        margin-bottom: var(--space-md);
+    }
+
+    .stepper-control .stepper-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+
+    .stepper-control .stepper-input {
+        width: 70px;
+        min-height: 44px;
+        font-size: var(--font-size-lg);
+    }
+
+    /* Direction toggle - larger buttons */
+    .direction-toggle {
+        gap: var(--space-sm);
+    }
+
+    .direction-toggle .dir-btn {
+        min-height: 40px;
+        font-size: var(--font-size-sm);
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    /* Radio cards - stacked on very small screens */
+    .radio-group {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+
+    .radio-card {
+        flex: 1 1 45%;
+        min-height: 48px;
+        padding: var(--space-md);
+    }
+
+    .radio-label {
+        font-size: var(--font-size-sm);
+    }
+
+    /* Sensitivity levels - wrap to 2 rows */
+    .sensitivity-levels {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+
+    .level-btn {
+        flex: 1 1 30%;
+        min-height: 48px;
+        padding: var(--space-md);
+        font-size: var(--font-size-sm);
+    }
+
+    /* Advanced toggles - single column */
+    .advanced-toggles {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+
+    .switch-card {
+        min-height: 48px;
+        padding: var(--space-md);
+    }
+
+    .switch-card-label {
+        font-size: var(--font-size-sm);
+    }
+
+    /* Remote control - stacked */
+    .remote-control-input {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .remote-control-input input {
+        min-height: 44px;
+        font-size: 16px;
+        /* Prevent iOS zoom */
+    }
+
+    .remote-control-input .btn {
+        width: 100%;
+    }
+
+    .remote-control-actions {
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+
+    .remote-control-actions .btn {
+        flex: 1;
+        min-height: 44px;
+    }
+
+    .remote-status {
+        width: 100%;
+        text-align: center;
+        margin-left: 0;
+    }
+
+    .remote-data-log {
+        height: 150px;
+        font-size: 11px;
+    }
+
+    /* Danger zone button */
+    .danger-zone .btn-danger {
+        width: 100%;
+        min-height: 48px;
+    }
 }
 
 /* Extra small screens (< 480px) */
@@ -282,6 +455,40 @@
     .color-grid#multiPresets,
     .color-grid#dynamicPresets {
         grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Factory Mode - single column for LED config */
+    .led-config-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Sensitivity levels - 3 per row on tiny screens */
+    .sensitivity-levels {
+        gap: var(--space-xs);
+    }
+
+    .level-btn {
+        flex: 1 1 28%;
+        min-height: 44px;
+        padding: var(--space-sm);
+        font-size: var(--font-size-xs);
+    }
+
+    /* Radio cards - full width */
+    .radio-card {
+        flex: 1 1 100%;
+    }
+
+    /* Stepper even larger */
+    .stepper-control .stepper-btn {
+        width: 48px;
+        height: 48px;
+    }
+
+    /* Remote log smaller */
+    .remote-data-log {
+        height: 120px;
+        font-size: 10px;
     }
 }
 

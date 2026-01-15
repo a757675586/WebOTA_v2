@@ -21,6 +21,11 @@ export class LightController {
         };
         this.switchState = 1; // 0: 关闭, 1: 打开, 2: 跟随车灯
 
+        this.switchState = 1; // 0: 关闭, 1: 打开, 2: 跟随车灯
+
+        // Helper for i18n
+        this._T = (key) => window.i18n ? window.i18n.get(key) : key;
+
         this.init();
     }
 
@@ -112,11 +117,11 @@ export class LightController {
 
     async updateZoneModeUI() {
         if (this.zoneMode) {
-            this.zoneModeLabel.textContent = '区域调节';
+            this.zoneModeLabel.textContent = this._T('label_zone_mode');
             this.unifiedZone.classList.add('hidden');
             this.zoneControls.classList.remove('hidden');
         } else {
-            this.zoneModeLabel.textContent = '统一调节';
+            this.zoneModeLabel.textContent = this._T('label_zone_mode');
             this.unifiedZone.classList.remove('hidden');
             this.zoneControls.classList.add('hidden');
         }

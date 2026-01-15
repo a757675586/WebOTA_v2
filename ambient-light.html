@@ -12,9 +12,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- I18n -->
+    <script src="js/i18n.js"></script>
+
     <!-- Styles -->
-    <link rel="stylesheet" href="css/components.css?v=10">
-    <link rel="stylesheet" href="css/ambient.css?v=10">
+    <link rel="stylesheet" href="css/components.css?v=12">
+    <link rel="stylesheet" href="css/ambient.css?v=12">
 </head>
 
 <body>
@@ -24,18 +27,21 @@
             <div class="brand">
                 <img src="images/applog.png" class="logo-img" alt="CKCP LAMP">
                 <div class="brand-text">
-                    <h1>CKCP LAMP</h1>
+                    <h1 data-i18n="brand_name">CKCP LAMP</h1>
                 </div>
             </div>
 
             <div class="nav-actions">
+                <button class="btn btn-text" id="btnLang" onclick="toggleLanguage()">
+                    🌐 <span id="langText">EN</span>
+                </button>
                 <div class="status-badge" id="statusBadge">
                     <span class="status-dot"></span>
-                    <span class="status-label" id="connectionStatus">未连接</span>
+                    <span class="status-label" id="connectionStatus" data-i18n="status_disconnected">未连接</span>
                 </div>
                 <button class="btn btn-primary" id="btnScan">
                     <span class="btn-icon">🔍</span>
-                    扫描设备
+                    <span data-i18n="scan_device">扫描设备</span>
                 </button>
             </div>
         </header>
@@ -45,15 +51,15 @@
             <div class="mode-tabs" id="modeTabs">
                 <button class="mode-tab active" data-mode="single">
                     <span class="mode-tab-icon">🎨</span>
-                    <span>单色模式</span>
+                    <span data-i18n="tab_single">单色模式</span>
                 </button>
                 <button class="mode-tab" data-mode="multi">
                     <span class="mode-tab-icon">🌈</span>
-                    <span>多色模式</span>
+                    <span data-i18n="tab_multi">多色模式</span>
                 </button>
                 <button class="mode-tab" data-mode="dynamic">
                     <span class="mode-tab-icon">🎵</span>
-                    <span>律动模式</span>
+                    <span data-i18n="tab_dynamic">律动模式</span>
                 </button>
             </div>
 
@@ -64,39 +70,40 @@
                     <div class="card card-glass">
                         <div class="card-header">
                             <div class="card-icon">📡</div>
-                            <h2>设备连接</h2>
+                            <h2 data-i18n="card_device_conn">设备连接</h2>
                         </div>
                         <div class="card-body">
                             <div class="device-card" id="deviceCard">
                                 <div class="device-icon">📱</div>
                                 <div class="device-info">
-                                    <div class="device-name" id="deviceName">未选择设备</div>
-                                    <div class="device-status" id="deviceStatus">请扫描并连接设备</div>
+                                    <div class="device-name" id="deviceName" data-i18n="device_none">未选择设备</div>
+                                    <div class="device-status" id="deviceStatus" data-i18n="device_scan_hint">请扫描并连接设备
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- 设备详细信息 (连接后显示) -->
                             <div class="device-details hidden" id="deviceDetails">
                                 <div class="detail-row">
-                                    <span class="detail-label">车型</span>
+                                    <span class="detail-label" data-i18n="label_car_model">车型</span>
                                     <span class="detail-value" id="detailCarModel">-</span>
                                 </div>
                                 <div class="detail-row">
-                                    <span class="detail-label">硬件</span>
+                                    <span class="detail-label" data-i18n="label_hw_ver">硬件</span>
                                     <span class="detail-value" id="detailHwVersion">-</span>
                                 </div>
                                 <div class="detail-row">
-                                    <span class="detail-label">软件</span>
+                                    <span class="detail-label" data-i18n="label_sw_ver">软件</span>
                                     <span class="detail-value" id="detailSwVersion">-</span>
                                 </div>
                             </div>
                             <button class="btn btn-outline btn-lg" id="btnDisconnect" style="display: none;">
                                 <span class="btn-icon">⏏️</span>
-                                断开连接
+                                <span data-i18n="disconnect">断开连接</span>
                             </button>
                             <button class="btn btn-warning btn-lg mt-sm hidden" id="btnEnterFactory">
                                 <span class="btn-icon">🔧</span>
-                                工厂模式
+                                <span data-i18n="btn_factory">工厂模式</span>
                             </button>
                         </div>
                     </div>
@@ -105,13 +112,14 @@
                     <div class="card card-glass">
                         <div class="card-header">
                             <div class="card-icon">💡</div>
-                            <h2>灯光设置</h2>
+                            <h2 data-i18n="card_light_settings">灯光设置</h2>
                         </div>
                         <div class="card-body">
                             <!-- 亮度模式切换 -->
                             <!-- 亮度模式切换 (Switch Card Style) -->
                             <div class="switch-card">
-                                <span class="switch-card-label" id="zoneModeLabel">区域亮度</span>
+                                <span class="switch-card-label" id="zoneModeLabel"
+                                    data-i18n="label_zone_mode">区域亮度</span>
                                 <label class="switch">
                                     <input type="checkbox" id="zoneMode">
                                     <span class="switch-slider"></span>
@@ -121,7 +129,7 @@
                             <!-- 统一亮度 -->
                             <div class="zone-controls" id="unifiedZone">
                                 <div class="slider-container">
-                                    <span class="slider-label">总亮度</span>
+                                    <span class="slider-label" data-i18n="label_total_brightness">总亮度</span>
                                     <input type="range" id="brightnessTotal" min="0" max="10" value="5">
                                     <span class="slider-value" id="brightnessTotalValue">5</span>
                                 </div>
@@ -131,21 +139,21 @@
                             <div class="zone-controls hidden" id="zoneControls">
                                 <div class="zone-item">
                                     <div class="zone-header">
-                                        <span class="zone-name">区域一</span>
+                                        <span class="zone-name" data-i18n="label_zone_1">区域一</span>
                                         <span class="zone-value" id="zone1Value">5</span>
                                     </div>
                                     <input type="range" id="brightnessZone1" min="0" max="10" value="5">
                                 </div>
                                 <div class="zone-item">
                                     <div class="zone-header">
-                                        <span class="zone-name">区域二</span>
+                                        <span class="zone-name" data-i18n="label_zone_2">区域二</span>
                                         <span class="zone-value" id="zone2Value">5</span>
                                     </div>
                                     <input type="range" id="brightnessZone2" min="0" max="10" value="5">
                                 </div>
                                 <div class="zone-item">
                                     <div class="zone-header">
-                                        <span class="zone-name">区域三</span>
+                                        <span class="zone-name" data-i18n="label_zone_3">区域三</span>
                                         <span class="zone-value" id="zone3Value">5</span>
                                     </div>
                                     <input type="range" id="brightnessZone3" min="0" max="10" value="5">
@@ -153,11 +161,11 @@
                             </div>
 
                             <!-- 开关控制 -->
-                            <div class="section-title mt-lg">开关控制</div>
+                            <div class="section-title mt-lg" data-i18n="title_switch_control">开关控制</div>
                             <div class="switch-group" id="switchControl">
-                                <button class="switch-option" data-switch="0">关闭</button>
-                                <button class="switch-option active" data-switch="1">打开</button>
-                                <button class="switch-option" data-switch="2">跟随车灯</button>
+                                <button class="switch-option" data-switch="0" data-i18n="switch_off">关闭</button>
+                                <button class="switch-option active" data-switch="1" data-i18n="switch_on">打开</button>
+                                <button class="switch-option" data-switch="2" data-i18n="switch_follow">跟随车灯</button>
                             </div>
                         </div>
                     </div>
@@ -169,11 +177,11 @@
                     <div class="card card-glass" id="singleColorPanel">
                         <div class="card-header">
                             <div class="card-icon">🎨</div>
-                            <h2>RGB 颜色控制</h2>
+                            <h2 data-i18n="card_rgb_control">RGB 颜色控制</h2>
                         </div>
                         <div class="card-body">
                             <!-- 颜色选择器 -->
-                            <div class="section-title">颜色选择</div>
+                            <div class="section-title" data-i18n="title_color_select">颜色选择</div>
                             <div class="color-picker-wrapper">
                                 <canvas id="colorPickerCanvas" class="color-picker-canvas"></canvas>
                                 <div class="color-picker-indicator" id="colorIndicator"></div>
@@ -181,20 +189,20 @@
                             <div class="color-preview">
                                 <div class="color-preview-swatch" id="colorPreview"></div>
                                 <div class="color-preview-info">
-                                    <div class="label">当前颜色</div>
+                                    <div class="label" data-i18n="label_current_color">当前颜色</div>
                                     <div class="value" id="colorHexValue">#FF0000</div>
                                 </div>
                                 <button class="btn btn-primary" id="btnApplyColor">
-                                    应用颜色
+                                    <span data-i18n="btn_apply_color">应用颜色</span>
                                 </button>
                             </div>
 
                             <!-- 预设颜色 -->
                             <div class="preset-colors-header mt-lg">
-                                <span class="title">常用颜色</span>
+                                <span class="title" data-i18n="header_preset_colors">常用颜色</span>
                                 <div class="actions">
-                                    <button class="action-btn" id="btnAddColor">+ 添加</button>
-                                    <button class="action-btn" id="btnEditColors">编辑</button>
+                                    <button class="action-btn" id="btnAddColor" data-i18n="btn_add">+ 添加</button>
+                                    <button class="action-btn" id="btnEditColors" data-i18n="btn_edit">编辑</button>
                                 </div>
                             </div>
                             <div class="color-grid" id="presetColors">
@@ -207,13 +215,14 @@
                     <div class="card card-glass hidden" id="multiColorPanel">
                         <div class="card-header">
                             <div class="card-icon">🌈</div>
-                            <h2>多色 RGB 控制</h2>
+                            <h2 data-i18n="card_multi_control">多色 RGB 控制</h2>
                         </div>
                         <div class="card-body">
                             <!-- 模式切换 -->
                             <!-- 模式切换 (Switch Card Style) -->
                             <div class="switch-card">
-                                <span class="switch-card-label" id="dynamicModeLabel">动态模式</span>
+                                <span class="switch-card-label" id="dynamicModeLabel"
+                                    data-i18n="label_dynamic_mode">动态模式</span>
                                 <label class="switch">
                                     <input type="checkbox" id="dynamicToggle">
                                     <span class="switch-slider"></span>
@@ -221,18 +230,19 @@
                             </div>
 
                             <!-- 预设多色方案 -->
-                            <div class="section-title mt-lg">预设方案</div>
+                            <div class="section-title mt-lg" data-i18n="header_presets">预设方案</div>
                             <div class="color-grid" id="multiPresets">
                                 <!-- 多色预设将由 JS 动态生成 -->
                             </div>
 
                             <!-- 通道颜色控制 (仅自定义模式可见) -->
                             <div id="customChannelControls" class="hidden">
-                                <div class="section-title mt-lg">通道颜色</div>
+                                <div class="section-title mt-lg" data-i18n="header_channels">通道颜色</div>
 
                                 <!-- 同步模式切换 (Switch Card Style) -->
                                 <div class="switch-card mb-md">
-                                    <span class="switch-card-label" id="syncModeLabel">同步模式</span>
+                                    <span class="switch-card-label" id="syncModeLabel"
+                                        data-i18n="label_sync_mode">同步模式</span>
                                     <label class="switch">
                                         <input type="checkbox" id="syncToggle" checked>
                                         <span class="switch-slider"></span>
@@ -243,7 +253,7 @@
                                 <div id="syncChannels">
                                     <div class="channel-section">
                                         <div class="channel-header">
-                                            <span class="channel-name">通道 1、2、3 颜色</span>
+                                            <span class="channel-name" data-i18n="channel_all">通道 1、2、3 颜色</span>
                                         </div>
                                         <div class="channel-colors" id="channelAllColors">
                                             <!-- 颜色将由 JS 动态生成 -->
@@ -255,19 +265,19 @@
                                 <div id="separateChannels" class="hidden">
                                     <div class="channel-section mb-md">
                                         <div class="channel-header">
-                                            <span class="channel-name">通道一颜色</span>
+                                            <span class="channel-name" data-i18n="channel_1">通道一颜色</span>
                                         </div>
                                         <div class="channel-colors" id="channel1Colors"></div>
                                     </div>
                                     <div class="channel-section mb-md">
                                         <div class="channel-header">
-                                            <span class="channel-name">通道二颜色</span>
+                                            <span class="channel-name" data-i18n="channel_2">通道二颜色</span>
                                         </div>
                                         <div class="channel-colors" id="channel2Colors"></div>
                                     </div>
                                     <div class="channel-section">
                                         <div class="channel-header">
-                                            <span class="channel-name">通道三颜色</span>
+                                            <span class="channel-name" data-i18n="channel_3">通道三颜色</span>
                                         </div>
                                         <div class="channel-colors" id="channel3Colors"></div>
                                     </div>
@@ -275,8 +285,9 @@
 
                                 <!-- 操作按钮 -->
                                 <div class="flex gap-md mt-lg" style="justify-content: center;">
-                                    <button class="btn btn-outline" id="btnClearMulti">清除颜色</button>
-                                    <button class="btn btn-primary" id="btnApplyMulti">应用</button>
+                                    <button class="btn btn-outline" id="btnClearMulti"
+                                        data-i18n="btn_clear_color">清除颜色</button>
+                                    <button class="btn btn-primary" id="btnApplyMulti" data-i18n="btn_apply">应用</button>
                                 </div>
                             </div>
                         </div>
@@ -286,11 +297,11 @@
                     <div class="card card-glass hidden" id="dynamicPanel">
                         <div class="card-header">
                             <div class="card-icon">🎵</div>
-                            <h2>律动模式</h2>
+                            <h2 data-i18n="card_dynamic_mode">律动模式</h2>
                         </div>
                         <div class="card-body">
                             <!-- 律动预设 -->
-                            <div class="section-title">律动效果</div>
+                            <div class="section-title" data-i18n="header_dynamic_effects">律动效果</div>
                             <div class="color-grid" id="dynamicPresets"
                                 style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">
                                 <!-- 律动预设将由 JS 动态生成 -->
@@ -302,37 +313,41 @@
                     <div class="card card-glass hidden" id="factoryPanel">
                         <div class="card-header">
                             <div class="card-icon">🔧</div>
-                            <h2>工厂模式</h2>
+                            <h2 data-i18n="card_factory_mode">工厂模式</h2>
                             <button class="btn btn-sm btn-outline" id="btnExitFactory" style="margin-left: auto;">
-                                退出
+                                <span data-i18n="btn_exit">退出</span>
                             </button>
                         </div>
                         <div class="card-body">
                             <!-- VIN 注册 -->
                             <div class="factory-section">
-                                <div class="section-title">📋 设备注册</div>
+                                <div class="section-title" data-i18n="header_device_reg">📋 设备注册</div>
                                 <div class="factory-input-group">
-                                    <label>VIN 码 (17位)</label>
+                                    <label data-i18n="label_vin">VIN 码 (17位)</label>
                                     <div class="input-with-btn">
-                                        <input type="text" id="factoryVIN" maxlength="17" placeholder="输入车辆VIN码">
-                                        <button class="btn btn-sm btn-primary" id="btnRegisterVIN">注册</button>
+                                        <input type="text" id="factoryVIN" maxlength="17" placeholder="输入车辆VIN码"
+                                            data-i18n="ph_vin">
+                                        <button class="btn btn-sm btn-primary" id="btnRegisterVIN"
+                                            data-i18n="btn_register">注册</button>
                                     </div>
                                 </div>
                                 <div class="factory-row mt-md">
                                     <div class="factory-input-group">
-                                        <label>车型编号</label>
+                                        <label data-i18n="label_car_code">车型编号</label>
                                         <div class="input-with-btn">
                                             <input type="number" id="factoryCarCode" min="0" max="255"
-                                                placeholder="0-255">
-                                            <button class="btn btn-sm btn-primary" id="btnSetCarCode">设置</button>
+                                                placeholder="0-255" data-i18n="ph_code">
+                                            <button class="btn btn-sm btn-primary" id="btnSetCarCode"
+                                                data-i18n="btn_set">设置</button>
                                         </div>
                                     </div>
                                     <div class="factory-input-group">
-                                        <label>功能编号</label>
+                                        <label data-i18n="label_func_code">功能编号</label>
                                         <div class="input-with-btn">
                                             <input type="number" id="factoryFuncCode" min="0" max="255"
-                                                placeholder="0-255">
-                                            <button class="btn btn-sm btn-primary" id="btnSetFuncCode">设置</button>
+                                                placeholder="0-255" data-i18n="ph_code">
+                                            <button class="btn btn-sm btn-primary" id="btnSetFuncCode"
+                                                data-i18n="btn_set">设置</button>
                                         </div>
                                     </div>
                                 </div>
@@ -340,7 +355,7 @@
 
                             <!-- LED 灯带配置 -->
                             <div class="factory-section mt-lg">
-                                <div class="section-title">💡 灯带安装配置</div>
+                                <div class="section-title" data-i18n="header_led_config">💡 灯带安装配置</div>
                                 <div class="led-config-grid" id="ledConfigGrid">
                                     <!-- JS 动态生成 6 个区域配置 -->
                                 </div>
@@ -348,72 +363,72 @@
 
                             <!-- 音源选择 -->
                             <div class="factory-section mt-lg">
-                                <div class="section-title">🎵 律动音源</div>
+                                <div class="section-title" data-i18n="header_sound_source">🎵 律动音源</div>
                                 <div class="radio-group">
                                     <label class="radio-card">
                                         <input type="radio" name="soundSource" value="mic" checked>
-                                        <span class="radio-label">内置麦克风</span>
+                                        <span class="radio-label" data-i18n="source_mic">内置麦克风</span>
                                     </label>
                                     <label class="radio-card">
                                         <input type="radio" name="soundSource" value="speaker">
-                                        <span class="radio-label">原车喇叭</span>
+                                        <span class="radio-label" data-i18n="source_speaker">原车喇叭</span>
                                     </label>
                                 </div>
                             </div>
 
                             <!-- 灵敏度 -->
                             <div class="factory-section mt-lg">
-                                <div class="section-title">📊 律动灵敏度</div>
+                                <div class="section-title" data-i18n="header_sensitivity">📊 律动灵敏度</div>
                                 <div class="sensitivity-levels" id="sensitivityLevels">
-                                    <button class="level-btn" data-level="1">1档</button>
-                                    <button class="level-btn active" data-level="2">2档</button>
-                                    <button class="level-btn" data-level="3">3档</button>
-                                    <button class="level-btn" data-level="4">4档</button>
-                                    <button class="level-btn" data-level="5">5档</button>
+                                    <button class="level-btn" data-level="1" data-i18n="level_1">1档</button>
+                                    <button class="level-btn active" data-level="2" data-i18n="level_2">2档</button>
+                                    <button class="level-btn" data-level="3" data-i18n="level_3">3档</button>
+                                    <button class="level-btn" data-level="4" data-i18n="level_4">4档</button>
+                                    <button class="level-btn" data-level="5" data-i18n="level_5">5档</button>
                                 </div>
                             </div>
 
                             <!-- 高级功能 -->
                             <div class="factory-section mt-lg">
-                                <div class="section-title">⚙️ 高级功能</div>
+                                <div class="section-title" data-i18n="header_advanced">⚙️ 高级功能</div>
                                 <div class="advanced-toggles">
                                     <div class="switch-card">
-                                        <span class="switch-card-label">迎宾灯</span>
+                                        <span class="switch-card-label" data-i18n="feat_welcome">迎宾灯</span>
                                         <label class="switch">
                                             <input type="checkbox" id="featureWelcome">
                                             <span class="switch-slider"></span>
                                         </label>
                                     </div>
                                     <div class="switch-card">
-                                        <span class="switch-card-label">车门联动</span>
+                                        <span class="switch-card-label" data-i18n="feat_door">车门联动</span>
                                         <label class="switch">
                                             <input type="checkbox" id="featureDoor">
                                             <span class="switch-slider"></span>
                                         </label>
                                     </div>
                                     <div class="switch-card">
-                                        <span class="switch-card-label">车速响应</span>
+                                        <span class="switch-card-label" data-i18n="feat_speed">车速响应</span>
                                         <label class="switch">
                                             <input type="checkbox" id="featureSpeed">
                                             <span class="switch-slider"></span>
                                         </label>
                                     </div>
                                     <div class="switch-card">
-                                        <span class="switch-card-label">转向联动</span>
+                                        <span class="switch-card-label" data-i18n="feat_turn">转向联动</span>
                                         <label class="switch">
                                             <input type="checkbox" id="featureTurn">
                                             <span class="switch-slider"></span>
                                         </label>
                                     </div>
                                     <div class="switch-card">
-                                        <span class="switch-card-label">空调联动</span>
+                                        <span class="switch-card-label" data-i18n="feat_ac">空调联动</span>
                                         <label class="switch">
                                             <input type="checkbox" id="featureAC">
                                             <span class="switch-slider"></span>
                                         </label>
                                     </div>
                                     <div class="switch-card">
-                                        <span class="switch-card-label">碰撞警示</span>
+                                        <span class="switch-card-label" data-i18n="feat_crash">碰撞警示</span>
                                         <label class="switch">
                                             <input type="checkbox" id="featureCrash">
                                             <span class="switch-slider"></span>
@@ -424,15 +439,15 @@
 
                             <!-- 危险操作 -->
                             <div class="factory-section mt-lg danger-zone">
-                                <div class="section-title">⚠️ 危险操作</div>
-                                <button class="btn btn-danger btn-lg" id="btnFactoryReset">
+                                <div class="section-title" data-i18n="header_danger">⚠️ 危险操作</div>
+                                <button class="btn btn-danger btn-lg" id="btnFactoryReset" data-i18n="btn_reset">
                                     🔄 恢复出厂设置
                                 </button>
                             </div>
 
                             <!-- 远程控制 -->
                             <div class="factory-section mt-lg">
-                                <div class="section-title">📡 远程控制 (CAN/LIN)</div>
+                                <div class="section-title" data-i18n="header_remote">📡 远程控制 (CAN/LIN)</div>
 
                                 <!-- 模式选择 -->
                                 <div class="remote-control-header">
@@ -450,23 +465,27 @@
 
                                 <!-- 输入和控制 -->
                                 <div class="remote-control-input mt-md">
-                                    <input type="text" id="remoteIdInput" placeholder="输入 CAN ID (如: 100 或 100,200)">
+                                    <input type="text" id="remoteIdInput" placeholder="输入 CAN ID (如: 100 或 100,200)"
+                                        data-i18n="ph_can_id">
                                     <button class="btn btn-primary" id="btnRemoteStart">
                                         <span class="btn-icon">▶️</span>
-                                        开始
+                                        <span data-i18n="btn_start">开始</span>
                                     </button>
                                 </div>
 
                                 <!-- 数据操作按钮 -->
                                 <div class="remote-control-actions mt-sm">
-                                    <button class="btn btn-sm btn-outline" id="btnRemoteClear">清空数据</button>
-                                    <button class="btn btn-sm btn-outline" id="btnRemoteSave">保存数据</button>
-                                    <span class="remote-status" id="remoteStatus">未运行</span>
+                                    <button class="btn btn-sm btn-outline" id="btnRemoteClear"
+                                        data-i18n="btn_clear_data">清空数据</button>
+                                    <button class="btn btn-sm btn-outline" id="btnRemoteSave"
+                                        data-i18n="btn_save_data">保存数据</button>
+                                    <span class="remote-status" id="remoteStatus"
+                                        data-i18n="status_remote_stopped">未运行</span>
                                 </div>
 
                                 <!-- 数据显示区 -->
                                 <div class="remote-data-log" id="remoteDataLog">
-                                    <div class="log-placeholder">监控数据将显示在这里...</div>
+                                    <div class="log-placeholder" data-i18n="log_placeholder">监控数据将显示在这里...</div>
                                 </div>
                             </div>
                         </div>
@@ -480,15 +499,15 @@
             <!-- 页面切换 -->
             <a href="ambient-light.html" class="bottom-nav-item active">
                 <span class="bottom-nav-icon">🎨</span>
-                <span class="bottom-nav-label">氛围灯</span>
+                <span class="bottom-nav-label" data-i18n="nav_ambient">氛围灯</span>
             </a>
             <a href="index.html" class="bottom-nav-item">
                 <span class="bottom-nav-icon">🚀</span>
-                <span class="bottom-nav-label">OTA升级</span>
+                <span class="bottom-nav-label" data-i18n="nav_ota">OTA升级</span>
             </a>
             <button class="bottom-nav-item" id="btnFactory">
                 <span class="bottom-nav-icon">🏭</span>
-                <span class="bottom-nav-label">工厂模式</span>
+                <span class="bottom-nav-label" data-i18n="nav_factory">工厂模式</span>
             </button>
         </nav>
     </div>
@@ -496,7 +515,7 @@
     <!-- 设备信息弹窗已移除 -->
 
     <!-- JavaScript 模块 -->
-    <script type="module" src="js/AmbientLightApp.js?v=15"></script>
+    <script type="module" src="js/AmbientLightApp.js?v=17"></script>
 </body>
 
 </html>

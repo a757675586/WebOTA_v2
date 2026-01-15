@@ -33,6 +33,8 @@ class BleService {
 
         // 升级响应队列
         this.upgradeResponseQueue = [];
+
+        this._T = (key) => window.i18n ? window.i18n.get(key) : key;
     }
 
     /**
@@ -51,7 +53,7 @@ class BleService {
         }
 
         try {
-            this.log('正在扫描设备...');
+            this.log(this._T('log_scanning'));
 
             // 请求设备 - 使用更宽松的过滤方式
             // 因为有些 BLE 设备不会在广播包中包含 Service UUID
@@ -69,7 +71,7 @@ class BleService {
                 // optionalServices: [SERVICE_UUID]
             });
 
-            this.log(`已选择设备: ${this.device.name || this.device.id}`);
+            this.log(`${this._T('log_device_selected')}: ${this.device.name || this.device.id}`);
 
             // 监听断开连接事件
             this.device.addEventListener('gattserverdisconnected', () => {
@@ -77,29 +79,29 @@ class BleService {
             });
 
             // 连接 GATT 服务器
-            this.log('正在连接 GATT 服务器...');
+            this.log(this._T('log_connecting_gatt'));
             this.server = await this.device.gatt.connect();
 
             // 获取服务
-            this.log('正在发现服务...');
+            this.log(this._T('log_discovering_services'));
             this.service = await this.server.getPrimaryService(SERVICE_UUID);
 
             // 获取写入特征
-            this.log('正在获取写入特征...');
+            this.log(this._T('log_getting_write_char'));
             this.writeChar = await this.service.getCharacteristic(WRITE_UUID);
 
             // 获取通知特征
-            this.log('正在获取通知特征...');
+            this.log(this._T('log_getting_notify_char'));
             this.notifyChar = await this.service.getCharacteristic(NOTIFY_UUID);
 
             // 订阅通知
-            this.log('正在订阅通知...');
+            this.log(this._T('log_subscribing_notify'));
             await this.notifyChar.startNotifications();
             this.notifyChar.addEventListener('characteristicvaluechanged', (event) => {
                 this.handleNotification(event);
             });
 
-            this.log('连接成功!');
+            this.log(this._T('log_connected'));
 
             if (this.onConnectionChange) {
                 this.onConnectionChange(true, this.device.name || this.device.id);
@@ -111,7 +113,7 @@ class BleService {
 
             return true;
         } catch (error) {
-            this.log(`连接失败: ${error.message}`);
+            this.log(`${this._T('log_connection_failed')}: ${error.message}`);
             throw error;
         }
     }
@@ -137,7 +139,7 @@ class BleService {
         this.notifyChar = null;
         this.upgradeResponseQueue = [];
 
-        this.log('已断开连接');
+        this.log(this._T('log_disconnected'));
 
         if (this.onConnectionChange) {
             this.onConnectionChange(false, null);
@@ -160,7 +162,7 @@ class BleService {
         }
 
         const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
-        this.log(`发送: ${bytesToHexString(bytes)}`);
+        this.log(`${this._T('log_sending')}: ${bytesToHexString(bytes)}`);
 
         await this.writeChar.writeValue(bytes);
     }
@@ -178,7 +180,7 @@ class BleService {
         // 检查是否是二进制升级响应 (第一个字节是 0xFF 或 0xD9)
         // 设备可能返回简短的响应格式
         if (bytes.length >= 2 && (bytes[0] === 0xFF || bytes[0] === 0xD9)) {
-            this.log(`收到(HEX): ${hexStr}`);
+            this.log(`${this._T('log_received_hex')}: ${hexStr}`);
 
             // 解析升级响应
             // 格式可能是: [0xFF, 0xD9, subCmd, offset..., result] 或 [0xD9, subCmd, ...]
@@ -201,7 +203,7 @@ class BleService {
                 }
 
                 const response = { subCmd, offset, result };
-                this.log(`升级响应: subCmd=0x${subCmd.toString(16)}, offset=${offset}, result=${result}`);
+                this.log(`${this._T('log_upgrade_response')}: subCmd=0x${subCmd.toString(16)}, offset=${offset}, result=${result}`);
 
                 this.upgradeResponseQueue.push(response);
                 if (this.onUpgradeResponse) {
@@ -212,7 +214,7 @@ class BleService {
 
             // CAN 帧响应 (0xDB) - 直接转发原始二进制数据
             if (cmd === 0xDB) {
-                this.log(`收到 CAN 帧响应: ${hexStr}`);
+                this.log(`${this._T('log_can_frame')}: ${hexStr}`);
                 if (this.onDataReceived) {
                     this.onDataReceived(bytes, { type: 'can_frame', raw: bytes });
                 }
@@ -228,7 +230,7 @@ class BleService {
 
         // 尝试解析为文本响应
         const textData = new TextDecoder().decode(bytes);
-        this.log(`收到: ${textData}`);
+        this.log(`${this._T('log_received_text')}: ${textData}`);
 
         // 解析文本响应
         const parsed = parseTextResponse(textData);
@@ -271,7 +273,7 @@ class BleService {
         try {
             // 1. 请求 MTU 配置: <FC0103>
             // 参考: MyBleWrapperCallback.java line 59
-            this.log('请求 MTU 配置...');
+            this.log(this._T('log_requesting_mtu'));
             const mtuCmd = new TextEncoder().encode('<FC0103>');
             await this.send(mtuCmd);
 
@@ -280,12 +282,12 @@ class BleService {
 
             // 2. 请求版本信息: <FC0101>
             // 参考: AboutActivity.java line 77
-            this.log('请求设备版本信息...');
+            this.log(this._T('log_requesting_version'));
             const versionCmd = new TextEncoder().encode('<FC0101>');
             await this.send(versionCmd);
 
         } catch (error) {
-            this.log(`请求设备信息失败: ${error.message}`);
+            this.log(`${this._T('log_request_info_failed')}: ${error.message}`);
         }
     }
 

@@ -3,10 +3,10 @@
  * 整合 BLE 连接、颜色选择、灯光控制等功能
  */
 
-import bleService from './BleService.js?v=14';
-import { ColorPicker } from './ColorPicker.js?v=14';
-import { LightController } from './LightController.js?v=14';
-import { AmbientProtocol, ZONE, SWITCH_STATE, CHANNEL, cmdSingleColor, cmdBrightness, cmdLightSwitch, cmdDynamicMode, cmdMultiTheme, cmdSyncMode, cmdDiyChannel } from './AmbientProtocol.js?v=14';
+import bleService from './BleService.js?v=17';
+import { ColorPicker } from './ColorPicker.js?v=17';
+import { LightController } from './LightController.js?v=17';
+import { AmbientProtocol, ZONE, SWITCH_STATE, CHANNEL, cmdSingleColor, cmdBrightness, cmdLightSwitch, cmdDynamicMode, cmdMultiTheme, cmdSyncMode, cmdDiyChannel } from './AmbientProtocol.js?v=17';
 
 class AmbientLightApp {
     constructor() {
@@ -15,6 +15,9 @@ class AmbientLightApp {
         this.protocol = new AmbientProtocol(bleService);
         this.colorPicker = null;
         this.lightController = null;
+
+        // I18n helper
+        this._T = (key) => window.i18n ? window.i18n.get(key) : key;
 
         // 状态
         this.currentMode = 'single'; // single, multi, dynamic
@@ -27,17 +30,17 @@ class AmbientLightApp {
         this.selectedMultiIndex = 0;
         this.selectedDynamicIndex = 0;
         this.multiPresets = [
-            { name: '湖滨晴雨', image: 'images/ic_mm_1.png', colors: ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#8B00FF'] },
-            { name: '曲院风荷', image: 'images/ic_mm_2.png', colors: ['#006994', '#40E0D0', '#00CED1', '#20B2AA'] },
-            { name: '雷峰夕照', image: 'images/ic_mm_3.png', colors: ['#FF4500', '#FF6347', '#FF7F50', '#FFD700'] },
-            { name: '月泉晓彻', image: 'images/ic_mm_4.png', colors: ['#228B22', '#32CD32', '#00FA9A', '#98FB98'] },
-            { name: '琼岛春阴', image: 'images/ic_mm_5.png', colors: ['#9400D3', '#8A2BE2', '#9932CC', '#BA55D3'] },
-            { name: '西山晴雪', image: 'images/ic_mm_6.png', colors: ['#FF0000', '#FF4500', '#FF6600', '#FF8C00'] },
-            { name: '平湖秋月', image: 'images/ic_mm_7.png', colors: ['#87CEEB', '#ADD8E6', '#B0E0E6', '#E0FFFF'] },
-            { name: '云栖竹径', image: 'images/ic_mm_8.png', colors: ['#191970', '#000080', '#4169E1', '#6495ED'] },
-            { name: '洞庭秋色', image: 'images/ic_mm_9.png', colors: ['#FFB6C1', '#FFC0CB', '#FF69B4', '#FF1493'] },
-            { name: '无极渐变', image: 'images/ic_mm_10.png', colors: [] },
-            { name: '自定义', image: '', colors: [] },
+            { name: '湖滨晴雨', key: 'preset_mode_1', image: 'images/ic_mm_1.png', colors: ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#8B00FF'] },
+            { name: '曲院风荷', key: 'preset_mode_2', image: 'images/ic_mm_2.png', colors: ['#006994', '#40E0D0', '#00CED1', '#20B2AA'] },
+            { name: '雷峰夕照', key: 'preset_mode_3', image: 'images/ic_mm_3.png', colors: ['#FF4500', '#FF6347', '#FF7F50', '#FFD700'] },
+            { name: '月泉晓彻', key: 'preset_mode_4', image: 'images/ic_mm_4.png', colors: ['#228B22', '#32CD32', '#00FA9A', '#98FB98'] },
+            { name: '琼岛春阴', key: 'preset_mode_5', image: 'images/ic_mm_5.png', colors: ['#9400D3', '#8A2BE2', '#9932CC', '#BA55D3'] },
+            { name: '西山晴雪', key: 'preset_mode_6', image: 'images/ic_mm_6.png', colors: ['#FF0000', '#FF4500', '#FF6600', '#FF8C00'] },
+            { name: '平湖秋月', key: 'preset_mode_7', image: 'images/ic_mm_7.png', colors: ['#87CEEB', '#ADD8E6', '#B0E0E6', '#E0FFFF'] },
+            { name: '云栖竹径', key: 'preset_mode_8', image: 'images/ic_mm_8.png', colors: ['#191970', '#000080', '#4169E1', '#6495ED'] },
+            { name: '洞庭秋色', key: 'preset_mode_9', image: 'images/ic_mm_9.png', colors: ['#FFB6C1', '#FFC0CB', '#FF69B4', '#FF1493'] },
+            { name: '无极渐变', key: 'preset_mode_10', image: 'images/ic_mm_10.png', colors: [] },
+            { name: '自定义', key: 'theme_custom', image: '', colors: [] },
         ];
 
         // 律动模式预设 (参考 Android App: DataRepository.kt -> model_1="模式")
@@ -63,6 +66,11 @@ class AmbientLightApp {
         this.initLightController();
         this.bindEvents();
 
+        // Subscribe to language changes
+        if (window.i18n) {
+            window.i18n.subscribe(() => this.onLanguageChange());
+        }
+
         // 加载保存的状态
         this.loadState();
 
@@ -87,6 +95,9 @@ class AmbientLightApp {
                 this.selectedDynamicIndex = state.selectedDynamicIndex || 0;
                 this.isDynamicToggleOn = state.isDynamicToggleOn !== undefined ? state.isDynamicToggleOn : false;
                 this.isSyncToggleOn = state.isSyncToggleOn !== undefined ? state.isSyncToggleOn : true;
+                if (state.ledZones) {
+                    this.ledZones = state.ledZones;
+                }
             }
         } catch (e) {
             console.error('加载状态失败:', e);
@@ -101,7 +112,8 @@ class AmbientLightApp {
                 selectedMultiIndex: this.selectedMultiIndex,
                 selectedDynamicIndex: this.selectedDynamicIndex,
                 isDynamicToggleOn: this.dynamicToggle ? this.dynamicToggle.checked : false,
-                isSyncToggleOn: this.syncToggle ? this.syncToggle.checked : true
+                isSyncToggleOn: this.syncToggle ? this.syncToggle.checked : true,
+                ledZones: this.ledZones
             };
             localStorage.setItem('ambientAppState', JSON.stringify(state));
         } catch (e) {
@@ -117,13 +129,13 @@ class AmbientLightApp {
         if (this.dynamicToggle) {
             this.dynamicToggle.checked = this.isDynamicToggleOn;
             if (this.dynamicModeLabel) {
-                this.dynamicModeLabel.textContent = this.isDynamicToggleOn ? '动态模式' : '静态模式';
+                this.dynamicModeLabel.textContent = this.isDynamicToggleOn ? this._T('label_dynamic_mode') : this._T('label_static_mode');
             }
         }
         if (this.syncToggle) {
             this.syncToggle.checked = this.isSyncToggleOn;
             if (this.syncModeLabel) {
-                this.syncModeLabel.textContent = this.isSyncToggleOn ? '同步模式' : '独立模式';
+                this.syncModeLabel.textContent = this.isSyncToggleOn ? this._T('label_sync_mode') : this._T('label_independent_mode');
             }
             this.syncChannels.classList.toggle('hidden', !this.isSyncToggleOn);
             this.separateChannels.classList.toggle('hidden', this.isSyncToggleOn);
@@ -235,7 +247,7 @@ class AmbientLightApp {
             this.protocol.startCANMonitor(input);
         } else {
             if (!input) {
-                alert('请输入 LIN 数据');
+                alert(this._T('msg_enter_lin'));
                 return;
             }
             this.protocol.startLINMonitor(input);
@@ -246,7 +258,7 @@ class AmbientLightApp {
 
         // 启动渲染循环
         this.startRenderLoop();
-        this.log(`远程控制已启动: ${this.remoteMode}`);
+        this.log(this._T('msg_remote_start') + `: ${this.remoteMode}`);
     }
 
     stopRemoteMonitor() {
@@ -377,8 +389,8 @@ class AmbientLightApp {
                 this.log(`亮度调节: 区域${zone} = ${value}`);
             },
             onSwitchChange: (state) => {
-                const states = ['关闭', '打开', '跟随车灯'];
-                this.log(`开关状态: ${states[state]}`);
+                const states = [this._T('switch_off'), this._T('switch_on'), this._T('switch_follow')];
+                this.log(`${this._T('title_switch_control')}: ${states[state]}`);
             }
         });
     }
@@ -404,7 +416,7 @@ class AmbientLightApp {
         this.syncToggle?.addEventListener('change', (e) => {
             const isSync = e.target.checked;
             if (this.syncModeLabel) {
-                this.syncModeLabel.textContent = isSync ? '同步模式' : '独立模式';
+                this.syncModeLabel.textContent = isSync ? this._T('label_sync_mode') : this._T('label_independent_mode');
             }
             this.syncChannels.classList.toggle('hidden', !isSync);
             this.separateChannels.classList.toggle('hidden', isSync);
@@ -417,9 +429,9 @@ class AmbientLightApp {
         this.dynamicToggle?.addEventListener('change', async (e) => {
             const isDynamic = e.target.checked;
             if (this.dynamicModeLabel) {
-                this.dynamicModeLabel.textContent = isDynamic ? '动态模式' : '静态模式';
+                this.dynamicModeLabel.textContent = isDynamic ? this._T('label_dynamic_mode') : this._T('label_static_mode');
             }
-            this.log(`切换模式: ${isDynamic ? '动态' : '静态'}`);
+            this.log(`${this._T('mode_pattern')}: ${isDynamic ? this._T('label_dynamic_mode') : this._T('label_static_mode')}`);
             await this.protocol.setDynamicMode(isDynamic);
 
             // 添加短暂延迟，确保设备处理完模式切换后再接收后续命令
@@ -463,9 +475,10 @@ class AmbientLightApp {
 
     async scanDevices() {
         try {
+
             this.log('开始扫描设备...');
             this.btnScan.disabled = true;
-            this.btnScan.innerHTML = '<span class="btn-icon">⏳</span> 扫描中...';
+            this.btnScan.innerHTML = `<span class="btn-icon">⏳</span> ${this._T('scan_device')}...`;
 
             await this.bleService.connect();
 
@@ -474,7 +487,7 @@ class AmbientLightApp {
             this.log('扫描失败: ' + error.message, 'error');
         } finally {
             this.btnScan.disabled = false;
-            this.btnScan.innerHTML = '<span class="btn-icon">🔍</span> 扫描设备';
+            this.btnScan.innerHTML = `<span class="btn-icon">🔍</span> ${this._T('scan_device')}`;
         }
     }
 
@@ -493,9 +506,9 @@ class AmbientLightApp {
 
         // 更新 UI
         this.statusBadge.classList.add('connected');
-        this.connectionStatus.textContent = '已连接';
+        this.connectionStatus.textContent = this._T('status_connected');
         this.deviceName.textContent = device?.name || '未知设备';
-        this.deviceStatus.textContent = '已连接';
+        this.deviceStatus.textContent = this._T('status_connected');
         this.deviceCard.classList.add('connected');
         if (this.deviceDetails) this.deviceDetails.classList.remove('hidden');
 
@@ -525,9 +538,9 @@ class AmbientLightApp {
 
         // 更新 UI
         this.statusBadge.classList.remove('connected');
-        this.connectionStatus.textContent = '未连接';
-        this.deviceName.textContent = '未选择设备';
-        this.deviceStatus.textContent = '请扫描并连接设备';
+        this.connectionStatus.textContent = this._T('status_disconnected');
+        this.deviceName.textContent = this._T('device_none');
+        this.deviceStatus.textContent = this._T('device_scan_hint');
         this.deviceCard.classList.remove('connected');
         if (this.deviceDetails) this.deviceDetails.classList.add('hidden');
 
@@ -911,7 +924,8 @@ class AmbientLightApp {
             // Add name element
             const nameEl = document.createElement('span');
             nameEl.className = 'preset-name';
-            nameEl.textContent = preset.name;
+            // Translate using key if available
+            nameEl.textContent = preset.key ? this._T(preset.key) : preset.name;
             swatch.appendChild(nameEl);
 
             swatch.addEventListener('click', () => {
@@ -984,7 +998,7 @@ class AmbientLightApp {
             // Add name element
             const nameEl = document.createElement('span');
             nameEl.className = 'preset-name';
-            nameEl.textContent = preset.name;
+            nameEl.textContent = `${this._T('mode_pattern')} ${preset.id}`;
             swatch.appendChild(nameEl);
 
             swatch.addEventListener('click', () => {
@@ -1338,30 +1352,42 @@ class AmbientLightApp {
         // LED 区域配置数据 (只在首次初始化时设置默认值)
         if (!this.ledZones || this.ledZones.length === 0) {
             this.ledZones = [
-                { name: '主驾', icon: '🚗', count: 0, ltr: true },
-                { name: '副驾', icon: '🚗', count: 0, ltr: true },
-                { name: '左前', icon: '⬅️', count: 0, ltr: true },
-                { name: '右前', icon: '➡️', count: 0, ltr: false },
-                { name: '左后', icon: '⬅️', count: 0, ltr: true },
-                { name: '右后', icon: '➡️', count: 0, ltr: false }
+                { name: '主驾', key: 'zone_seat_main', icon: '🚗', count: 0, ltr: true },
+                { name: '副驾', key: 'zone_seat_copilot', icon: '🚗', count: 0, ltr: true },
+                { name: '左前', key: 'zone_left_front', icon: '⬅️', count: 0, ltr: true },
+                { name: '右前', key: 'zone_right_front', icon: '➡️', count: 0, ltr: false },
+                { name: '左后', key: 'zone_left_rear', icon: '⬅️', count: 0, ltr: true },
+                { name: '右后', key: 'zone_right_rear', icon: '➡️', count: 0, ltr: false }
             ];
         }
 
-        this.ledConfigGrid.innerHTML = this.ledZones.map((zone, index) => `
+        // Migration: Ensure keys exist (for old saved state)
+        const zoneKeys = ['zone_seat_main', 'zone_seat_copilot', 'zone_left_front', 'zone_right_front', 'zone_left_rear', 'zone_right_rear'];
+        this.ledZones.forEach((zone, i) => {
+            if (!zone.key && zoneKeys[i]) {
+                zone.key = zoneKeys[i];
+            }
+        });
+
+        this.ledConfigGrid.innerHTML = this.ledZones.map((zone, index) => {
+            // Use key for translation if available, fallback to name
+            const displayName = zone.key ? this._T(zone.key) : zone.name;
+            return `
                 <div class="led-config-item" data-zone="${index}">
                     <div class="zone-icon">${zone.icon}</div>
-                    <div class="zone-name">${zone.name}</div>
+                    <div class="zone-name">${displayName}</div>
                     <div class="stepper-control">
                         <button class="stepper-btn" data-action="decrease">−</button>
                         <input type="number" class="stepper-input" data-zone="${index}" value="${zone.count}" min="0" max="255">
                         <button class="stepper-btn" data-action="increase">+</button>
                     </div>
                     <div class="direction-toggle">
-                        <button class="dir-btn ${zone.ltr ? 'active' : ''}" data-dir="ltr">左→右</button>
-                        <button class="dir-btn ${!zone.ltr ? 'active' : ''}" data-dir="rtl">右→左</button>
+                        <button class="dir-btn ${zone.ltr ? 'active' : ''}" data-dir="ltr">${this._T('dir_ltr')}</button>
+                        <button class="dir-btn ${!zone.ltr ? 'active' : ''}" data-dir="rtl">${this._T('dir_rtl')}</button>
                     </div>
                 </div>
-            `).join('');
+            `;
+        }).join('');
 
         // 绑定 LED 配置事件
         this.ledConfigGrid.querySelectorAll('.led-config-item').forEach(item => {
@@ -1383,7 +1409,8 @@ class AmbientLightApp {
 
                 // 发送 LED 数量命令
                 this.protocol.setLedCount(zoneIndex, count);
-                this.log(`${this.ledZones[zoneIndex].name} 灯珠数: ${count}`);
+                const displayName = this.ledZones[zoneIndex].key ? this._T(this.ledZones[zoneIndex].key) : this.ledZones[zoneIndex].name;
+                this.log(`${displayName} ${this._T('log_led_count')}: ${count}`);
             });
 
             // 灯珠数量加减
@@ -1417,7 +1444,8 @@ class AmbientLightApp {
 
                     // 发送方向命令
                     this.protocol.setLedDirection(zoneIndex, isLtr);
-                    this.log(`${this.ledZones[zoneIndex].name} 方向: ${isLtr ? '左→右' : '右→左'}`);
+                    const displayName = this.ledZones[zoneIndex].key ? this._T(this.ledZones[zoneIndex].key) : this.ledZones[zoneIndex].name;
+                    this.log(`${displayName} ${this._T('log_direction')}: ${isLtr ? this._T('dir_ltr') : this._T('dir_rtl')}`);
                 });
             });
         });
@@ -1427,6 +1455,34 @@ class AmbientLightApp {
 
     log(message, type = 'info') {
         console.log(`[${type.toUpperCase()}] ${message}`);
+    }
+
+    onLanguageChange() {
+        console.log('[AmbientLightApp] 语言已切换');
+
+        // Update Status Texts
+        if (this.isConnected) {
+            this.connectionStatus.textContent = this._T('status_connected');
+            this.deviceStatus.textContent = this._T('status_connected');
+            this.btnScan.innerHTML = `<span class="btn-icon">🔍</span> ${this._T('scan_device')}`;
+        } else {
+            this.connectionStatus.textContent = this._T('status_disconnected');
+            this.deviceStatus.textContent = this._T('device_scan_hint');
+            this.btnScan.innerHTML = `<span class="btn-icon">🔍</span> ${this._T('scan_device')}`;
+        }
+
+        // Re-render components that have dynamic text
+        this.renderMultiPresets();
+        this.renderDynamicPresets();
+        this.renderLedConfigGrid();
+
+        // Update toggle labels if they exist
+        if (this.dynamicModeLabel) {
+            this.dynamicModeLabel.textContent = this.isDynamicToggleOn ? this._T('label_dynamic_mode') : this._T('label_static_mode');
+        }
+        if (this.syncModeLabel) {
+            this.syncModeLabel.textContent = this.isSyncToggleOn ? this._T('label_sync_mode') : this._T('label_independent_mode');
+        }
     }
 }
 

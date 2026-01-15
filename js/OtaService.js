@@ -12,6 +12,7 @@ class OtaService {
         this.onProgress = null;
         this.onStatusChange = null;
         this.onComplete = null;
+        this._T = (key) => window.i18n ? window.i18n.get(key) : key;
     }
 
     /**
@@ -21,38 +22,38 @@ class OtaService {
      */
     async startUpgrade(fileData, version = { major: 1, minor: 0, build: 0 }) {
         if (this.isUpgrading) {
-            throw new Error('升级正在进行中');
+            throw new Error(this._T('err_upgrade_in_progress'));
         }
 
         if (!bleService.isConnected()) {
-            throw new Error('设备未连接');
+            throw new Error(this._T('err_device_not_connected'));
         }
 
         this.isUpgrading = true;
-        this.updateStatus('正在准备升级...');
+        this.updateStatus(this._T('status_preparing_upgrade'));
 
         try {
             const fileSize = fileData.byteLength;
             const frameDataCount = bleService.frameDataCount || 64;
 
-            this.log(`文件大小: ${fileSize} 字节`);
-            this.log(`每帧数据量: ${frameDataCount} 字节`);
+            this.log(`${this._T('log_file_size')}: ${fileSize} ${this._T('unit_bytes')}`);
+            this.log(`${this._T('log_frame_size')}: ${frameDataCount} ${this._T('unit_bytes')}`);
 
             // 清空响应队列
             bleService.clearResponseQueue();
 
             // 1. 发送升级请求帧
-            this.updateStatus('发送升级请求...');
+            this.updateStatus(this._T('status_sending_request'));
             const requestFrame = generateUpgradeRequestFrame(fileData, version.major, version.minor, version.build);
             await bleService.send(requestFrame);
 
             // 2. 等待确认
-            this.log('等待设备确认...');
+            this.log(this._T('status_waiting_ack'));
             const ack = await bleService.waitForResponse(CMD.UPGRADE_ACK, 3000);
             if (!ack) {
-                throw new Error('设备未响应升级请求');
+                throw new Error(this._T('err_no_ack'));
             }
-            this.log('设备已确认,开始传输数据...');
+            this.log(this._T('log_ack_received'));
 
             // 3. 分帧发送数据
             let offset = 0;
@@ -64,7 +65,7 @@ class OtaService {
                 // 发送数据帧,带重试
                 const success = await this.sendFrameWithRetry(fileData, offset, count, 3);
                 if (!success) {
-                    throw new Error(`数据帧发送失败,偏移: ${offset}`);
+                    throw new Error(`${this._T('err_frame_failed')} ${offset}`);
                 }
 
                 offset += count;
@@ -78,18 +79,18 @@ class OtaService {
             }
 
             // 4. 发送结束帧
-            this.updateStatus('发送结束帧...');
+            this.updateStatus(this._T('status_sending_finish'));
             const finishFrame = generateFinishFrame();
             await bleService.send(finishFrame);
 
             // 5. 等待结束确认
             const endAck = await bleService.waitForResponse(CMD.UPGRADE_DATA_END_ACK, 3000);
             if (!endAck) {
-                throw new Error('未收到升级完成确认');
+                throw new Error(this._T('err_no_finish_ack'));
             }
 
-            this.updateStatus('升级成功!');
-            this.log('固件升级完成');
+            this.updateStatus(this._T('status_upgrade_success'));
+            this.log(this._T('log_upgrade_complete'));
             this.isUpgrading = false;
 
             if (this.onComplete) {
@@ -98,8 +99,8 @@ class OtaService {
 
             return true;
         } catch (error) {
-            this.log(`升级失败: ${error.message}`);
-            this.updateStatus(`升级失败: ${error.message}`);
+            this.log(`${this._T('status_upgrade_failed')}: ${error.message}`);
+            this.updateStatus(`${this._T('status_upgrade_failed')}: ${error.message}`);
             this.isUpgrading = false;
 
             if (this.onComplete) {
@@ -128,7 +129,7 @@ class OtaService {
                 // 参考 CarLight: result == 0 或匹配都算成功
                 // subCmd == COMMAND_UPGRADE_CANCEL (0x89) 时返回失败
                 if (frameAck.subCmd === CMD.UPGRADE_CANCEL) {
-                    this.log('设备取消升级');
+                    this.log(this._T('log_upgrade_canceled'));
                     return false;
                 }
 
@@ -139,7 +140,7 @@ class OtaService {
 
                 // result == 0xFF 表示失败
                 if (frameAck.result === 0xFF || frameAck.result === 255) {
-                    this.log(`设备拒绝,result=${frameAck.result}`);
+                    this.log(`${this._T('log_device_refused')} ${frameAck.result}`);
                     return false;
                 }
 
@@ -147,7 +148,7 @@ class OtaService {
                 return true;
             }
 
-            this.log(`帧重试 ${retry + 1}/${maxRetries}, 偏移: ${offset}`);
+            this.log(`${this._T('log_frame_retry')} ${retry + 1}/${maxRetries}, ${this._T('log_offset')}: ${offset}`);
             await delay(100);
         }
 

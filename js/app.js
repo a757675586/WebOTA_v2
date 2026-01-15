@@ -6,6 +6,9 @@
 import bleService from './BleService.js';
 import otaService from './OtaService.js';
 
+// ============== Helers ==============
+const _T = (key) => window.i18n ? window.i18n.get(key) : key;
+
 // ============== DOM 元素 ==============
 const elements = {
     // 导航栏状态
@@ -46,7 +49,7 @@ let selectedFile = null;
 function init() {
     // 检查 Web Bluetooth 支持
     if (!bleService.isAvailable()) {
-        showError('您的浏览器不支持 Web Bluetooth API。请使用 Chrome 或 Edge 浏览器。');
+        showError('Browser does not support Web Bluetooth API. Please use Chrome or Edge.');
         elements.btnScan.disabled = true;
         return;
     }
@@ -60,7 +63,12 @@ function init() {
     // 设置 OTA 回调
     setupOtaCallbacks();
 
-    addLog('应用已就绪，请扫描设备开始连接', 'info');
+    // 监听语言变化
+    if (window.i18n) {
+        window.i18n.subscribe(onLanguageChange);
+    }
+
+    addLog(_T('device_scan_hint'), 'info');
 }
 
 // ============== 事件绑定 ==============
@@ -69,15 +77,15 @@ function bindEvents() {
     elements.btnScan.addEventListener('click', async () => {
         try {
             elements.btnScan.disabled = true;
-            elements.btnScan.innerHTML = '<span class="btn-icon">⏳</span>扫描中...';
+            elements.btnScan.innerHTML = `<span class="btn-icon">⏳</span>${_T('scan_device')}...`;
             await bleService.connect();
         } catch (error) {
             if (error.name !== 'NotFoundError') {
-                addLog(`连接错误: ${error.message}`, 'error');
+                addLog(`Connection Error: ${error.message}`, 'error');
             }
         } finally {
             elements.btnScan.disabled = false;
-            elements.btnScan.innerHTML = '<span class="btn-icon">🔍</span>扫描设备';
+            elements.btnScan.innerHTML = `<span class="btn-icon">🔍</span>${_T('scan_device')}`;
         }
     });
 
@@ -108,7 +116,7 @@ function bindEvents() {
         if (file && file.name.endsWith('.bin')) {
             handleFileSelect(file);
         } else {
-            addLog('请选择 .bin 格式的固件文件', 'error');
+            addLog('Please select .bin firmware file', 'error');
         }
     });
 
@@ -123,27 +131,27 @@ function bindEvents() {
     // 升级按钮
     elements.btnUpgrade.addEventListener('click', async () => {
         if (!selectedFile) {
-            showError('请先选择固件文件');
+            showError('Please select firmware file first');
             return;
         }
 
         try {
             elements.btnUpgrade.disabled = true;
-            elements.btnUpgrade.innerHTML = '<span class="btn-icon">⏳</span>升级中...';
+            elements.btnUpgrade.innerHTML = '<span class="btn-icon">⏳</span>Upgrading...';
             const fileData = await selectedFile.arrayBuffer();
             await otaService.startUpgrade(fileData);
         } catch (error) {
-            addLog(`升级错误: ${error.message}`, 'error');
+            addLog(`Upgrade Error: ${error.message}`, 'error');
         } finally {
             elements.btnUpgrade.disabled = !bleService.isConnected() || !selectedFile;
-            elements.btnUpgrade.innerHTML = '<span class="btn-icon">⬆️</span>开始升级';
+            elements.btnUpgrade.innerHTML = '<span class="btn-icon">⬆️</span>Start Upgrade';
         }
     });
 
     // 清空日志
     elements.btnClearLog.addEventListener('click', () => {
         elements.logContainer.innerHTML = '';
-        addLog('日志已清空', 'info');
+        addLog('Log cleared', 'info');
     });
 }
 
@@ -154,7 +162,7 @@ function handleFileSelect(file) {
     elements.fileSize.textContent = formatFileSize(file.size);
     elements.fileDropZone.classList.add('has-file');
     elements.btnUpgrade.disabled = !bleService.isConnected();
-    addLog(`已选择固件: ${file.name} (${formatFileSize(file.size)})`, 'info');
+    addLog(`Firmware Selected: ${file.name} (${formatFileSize(file.size)})`, 'info');
 }
 
 // ============== BLE 回调设置 ==============
@@ -176,14 +184,14 @@ function setupBleCallbacks() {
         elements.hwVersion.textContent = info.hwVersion || '-';
         elements.swVersion.textContent = info.swVersion || '-';
         elements.carModel.textContent = info.carModel || '-';
-        addLog(`设备信息: HW=${info.hwVersion}, SW=${info.swVersion}`, 'info');
+        addLog(`Device Info: HW=${info.hwVersion}, SW=${info.swVersion}`, 'info');
     };
 
     // MTU 配置
     bleService.onMtuConfig = (config) => {
         elements.mtuValue.textContent = config.mtu + ' bytes';
         elements.otaOffset.textContent = config.otaOffset + ' bytes';
-        addLog(`MTU=${config.mtu}, 帧大小=${config.otaOffset}`, 'info');
+        addLog(`MTU=${config.mtu}, Frame Size=${config.otaOffset}`, 'info');
     };
 
     // 日志
@@ -208,11 +216,11 @@ function setupOtaCallbacks() {
     // 升级完成
     otaService.onComplete = (success, error) => {
         if (success) {
-            elements.upgradeStatus.textContent = '✓ 升级成功';
-            addLog('固件升级成功完成!', 'success');
+            elements.upgradeStatus.textContent = '✓ Success';
+            addLog('Firmware upgrade completed successfully!', 'success');
         } else {
             elements.upgradeStatus.textContent = `✗ ${error}`;
-            addLog(`升级失败: ${error}`, 'error');
+            addLog(`Upgrade Failed: ${error}`, 'error');
         }
     };
 }
@@ -220,15 +228,15 @@ function setupOtaCallbacks() {
 // ============== UI 更新 ==============
 function updateConnectionUI(connected, name) {
     if (connected) {
-        elements.connectionStatus.textContent = '已连接';
+        elements.connectionStatus.textContent = _T('status_connected');
         elements.statusBadge.classList.add('connected');
-        elements.deviceName.textContent = name || '未知设备';
+        elements.deviceName.textContent = name || _T('device_none');
         elements.btnScan.style.display = 'none';
         elements.btnDisconnect.style.display = 'flex';
     } else {
-        elements.connectionStatus.textContent = '未连接';
+        elements.connectionStatus.textContent = _T('status_disconnected');
         elements.statusBadge.classList.remove('connected');
-        elements.deviceName.textContent = '未选择';
+        elements.deviceName.textContent = _T('device_none');
         elements.btnScan.style.display = 'flex';
         elements.btnDisconnect.style.display = 'none';
     }
@@ -242,7 +250,19 @@ function clearDeviceInfo() {
     elements.otaOffset.textContent = '-';
     elements.progressBar.style.width = '0%';
     elements.progressText.textContent = '0%';
-    elements.upgradeStatus.textContent = '等待中';
+    elements.upgradeStatus.textContent = 'Waiting...';
+}
+
+function onLanguageChange() {
+    // Update dynamic UI elements
+    updateConnectionUI(bleService.isConnected(), bleService.device?.name);
+
+    // Update button states if needed
+    if (!elements.btnScan.disabled) {
+        elements.btnScan.innerHTML = `<span class="btn-icon">🔍</span>${_T('scan_device')}`;
+    }
+
+    // Note: Other static elements are handled by i18n.js automatically via data-i18n
 }
 
 // ============== 工具函数 ==============
@@ -268,7 +288,7 @@ function formatFileSize(bytes) {
 }
 
 function showError(message) {
-    addLog(`错误: ${message}`, 'error');
+    addLog(`Error: ${message}`, 'error');
     alert(message);
 }
 
