@@ -1737,6 +1737,106 @@ input[type="range"]::-moz-range-thumb:hover {
     color: white;
 }
 
+/* ==========================================================================
+   LED Config Mobile Overrides - CRITICAL for preventing overflow
+   ========================================================================== */
+@media (max-width: 480px) {
+
+    /* Force LED config to use more compact layout */
+    .led-config-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-xs);
+    }
+
+    .led-config-item {
+        padding: var(--space-xs);
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .led-config-item .zone-icon {
+        font-size: 20px;
+        margin-bottom: 2px;
+    }
+
+    .led-config-item .zone-name {
+        font-size: 10px;
+        margin-bottom: var(--space-xs);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Compact stepper controls */
+    .stepper-control {
+        gap: 2px;
+        margin-bottom: var(--space-xs);
+    }
+
+    .stepper-control .stepper-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .stepper-control .stepper-input {
+        width: 36px;
+        min-width: 36px;
+        padding: 4px 0;
+        font-size: var(--font-size-sm);
+    }
+
+    /* Compact direction toggle */
+    .direction-toggle {
+        gap: 2px;
+    }
+
+    .direction-toggle .dir-btn {
+        padding: 4px 6px;
+        font-size: 10px;
+        min-width: 0;
+    }
+}
+
+/* Extra small screens (< 360px) - even more compact */
+@media (max-width: 360px) {
+    .led-config-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+    }
+
+    .led-config-item {
+        padding: 4px;
+    }
+
+    .led-config-item .zone-icon {
+        font-size: 18px;
+    }
+
+    .led-config-item .zone-name {
+        font-size: 9px;
+    }
+
+    .stepper-control .stepper-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+    }
+
+    .stepper-control .stepper-input {
+        width: 32px;
+        min-width: 32px;
+        font-size: 12px;
+        padding: 3px 0;
+    }
+
+    .direction-toggle .dir-btn {
+        padding: 3px 4px;
+        font-size: 9px;
+    }
+}
+
 /* Radio Group */
 .radio-group {
     display: flex;
