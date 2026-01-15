@@ -284,28 +284,67 @@
 }
 
 /* ==========================================================================
-   Footer Navigation
+   Bottom Navigation
    ========================================================================== */
-.ambient-footer {
+.bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: var(--space-lg);
-    padding: var(--space-md) var(--space-lg);
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border-top: 1px solid var(--glass-border);
+    align-items: stretch;
+    background: rgba(10, 10, 30, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 100;
+    padding: 0;
+}
+
+.bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: var(--space-sm) var(--space-md);
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-family: inherit;
+}
+
+.bottom-nav-item:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.bottom-nav-item.active {
+    color: #6366f1;
+}
+
+.bottom-nav-item.active .bottom-nav-icon {
+    transform: scale(1.1);
+}
+
+.bottom-nav-icon {
+    font-size: 20px;
+    transition: transform var(--transition-fast);
+}
+
+.bottom-nav-label {
+    font-size: 11px;
+    font-weight: 500;
 }
 
 /* Add padding to main container to prevent footer overlap */
 .ambient-app {
-    padding-bottom: 80px;
+    padding-bottom: 70px;
 }
 
 /* ==========================================================================

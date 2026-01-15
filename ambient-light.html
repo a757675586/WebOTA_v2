@@ -13,8 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="css/components.css?v=6">
-    <link rel="stylesheet" href="css/ambient.css?v=6">
+    <link rel="stylesheet" href="css/components.css?v=7">
+    <link rel="stylesheet" href="css/ambient.css?v=7">
 </head>
 
 <body>
@@ -27,18 +27,6 @@
                     <h1>CarLight</h1>
                 </div>
             </div>
-
-            <!-- 页面切换 Tabs -->
-            <nav class="page-tabs">
-                <a href="ambient-light.html" class="page-tab active">
-                    <span class="page-tab-icon">🎨</span>
-                    <span>氛围灯控制</span>
-                </a>
-                <a href="index.html" class="page-tab">
-                    <span class="page-tab-icon">🚀</span>
-                    <span>OTA升级</span>
-                </a>
-            </nav>
 
             <div class="nav-actions">
                 <div class="status-badge" id="statusBadge">
@@ -488,14 +476,19 @@
         </div>
 
         <!-- 底部导航 -->
-        <nav class="ambient-footer">
-            <a href="index.html" class="btn btn-outline">
-                <span class="btn-icon">⬆️</span>
-                OTA 升级
+        <nav class="bottom-nav">
+            <!-- 页面切换 -->
+            <a href="ambient-light.html" class="bottom-nav-item active">
+                <span class="bottom-nav-icon">🎨</span>
+                <span class="bottom-nav-label">氛围灯</span>
             </a>
-            <button class="btn btn-outline" id="btnFactory">
-                <span class="btn-icon">🏭</span>
-                工厂模式
+            <a href="index.html" class="bottom-nav-item">
+                <span class="bottom-nav-icon">🚀</span>
+                <span class="bottom-nav-label">OTA升级</span>
+            </a>
+            <button class="bottom-nav-item" id="btnFactory">
+                <span class="bottom-nav-icon">🏭</span>
+                <span class="bottom-nav-label">工厂模式</span>
             </button>
         </nav>
     </div>
