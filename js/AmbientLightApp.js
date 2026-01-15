@@ -3,10 +3,10 @@
  * 整合 BLE 连接、颜色选择、灯光控制等功能
  */
 
-import bleService from './BleService.js?v=12';
-import { ColorPicker } from './ColorPicker.js?v=12';
-import { LightController } from './LightController.js?v=12';
-import { AmbientProtocol, ZONE, SWITCH_STATE, CHANNEL, cmdSingleColor, cmdBrightness, cmdLightSwitch, cmdDynamicMode, cmdMultiTheme, cmdSyncMode, cmdDiyChannel } from './AmbientProtocol.js?v=12';
+import bleService from './BleService.js?v=13';
+import { ColorPicker } from './ColorPicker.js?v=13';
+import { LightController } from './LightController.js?v=13';
+import { AmbientProtocol, ZONE, SWITCH_STATE, CHANNEL, cmdSingleColor, cmdBrightness, cmdLightSwitch, cmdDynamicMode, cmdMultiTheme, cmdSyncMode, cmdDiyChannel } from './AmbientProtocol.js?v=13';
 
 class AmbientLightApp {
     constructor() {
@@ -413,15 +413,8 @@ class AmbientLightApp {
             // 添加短暂延迟，确保设备处理完模式切换后再接收后续命令
             await new Promise(r => setTimeout(r, 100));
 
-            if (isDynamic) {
-                // 切换到动态模式，重新发送当前选中的律动特效
-                if (this.dynamicPresets && this.dynamicPresets[this.selectedDynamicIndex]) {
-                    await this.protocol.setDynamicEffect(this.dynamicPresets[this.selectedDynamicIndex].id);
-                }
-            } else {
-                // 切换到静态模式，重新发送当前选中的主题
-                await this.protocol.setMultiTheme(this.selectedMultiIndex + 1);
-            }
+            // 无论切换到动态还是静态，都重新发送当前选中的多色预设主题
+            await this.protocol.setMultiTheme(this.selectedMultiIndex + 1);
 
             this.saveState();
         });
