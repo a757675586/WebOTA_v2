@@ -124,10 +124,18 @@ export class LightController {
         // 发送区域模式切换命令
         await this.sendZoneMode(this.zoneMode);
 
-        // 如果切换到统一模式，重新发送当前总亮度
         // 添加短暂延迟，确保设备处理完模式切换后再接收亮度命令
-        if (!this.zoneMode) {
-            await new Promise(r => setTimeout(r, 100));
+        await new Promise(r => setTimeout(r, 100));
+
+        if (this.zoneMode) {
+            // 切换到区域模式，重新发送各区域亮度
+            await this.sendBrightness(1, this.brightness.zone1);
+            await new Promise(r => setTimeout(r, 50));
+            await this.sendBrightness(2, this.brightness.zone2);
+            await new Promise(r => setTimeout(r, 50));
+            await this.sendBrightness(3, this.brightness.zone3);
+        } else {
+            // 切换到统一模式，重新发送总亮度
             await this.sendBrightness(4, this.brightness.total);
         }
     }
