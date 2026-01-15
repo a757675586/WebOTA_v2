@@ -1353,7 +1353,7 @@ class AmbientLightApp {
                     <div class="zone-name">${zone.name}</div>
                     <div class="stepper-control">
                         <button class="stepper-btn" data-action="decrease">−</button>
-                        <span class="stepper-value" data-zone="${index}">${zone.count}</span>
+                        <input type="number" class="stepper-input" data-zone="${index}" value="${zone.count}" min="0" max="255">
                         <button class="stepper-btn" data-action="increase">+</button>
                     </div>
                     <div class="direction-toggle">
@@ -1366,13 +1366,31 @@ class AmbientLightApp {
         // 绑定 LED 配置事件
         this.ledConfigGrid.querySelectorAll('.led-config-item').forEach(item => {
             const zoneIndex = parseInt(item.dataset.zone);
+            const inputEl = item.querySelector('.stepper-input');
+
+            // 监听输入框变化
+            inputEl.addEventListener('change', (e) => {
+                let count = parseInt(e.target.value);
+
+                // 验证并修正范围
+                if (isNaN(count)) count = 0;
+                if (count < 0) count = 0;
+                if (count > 255) count = 255;
+
+                // 更新 UI 和状态
+                e.target.value = count;
+                this.ledZones[zoneIndex].count = count;
+
+                // 发送 LED 数量命令
+                this.protocol.setLedCount(zoneIndex, count);
+                this.log(`${this.ledZones[zoneIndex].name} 灯珠数: ${count}`);
+            });
 
             // 灯珠数量加减
             item.querySelectorAll('.stepper-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const action = e.target.dataset.action;
-                    const valueEl = item.querySelector('.stepper-value');
-                    let count = parseInt(valueEl.textContent);
+                    let count = parseInt(inputEl.value);
 
                     if (action === 'increase' && count < 255) {
                         count++;
@@ -1380,12 +1398,9 @@ class AmbientLightApp {
                         count--;
                     }
 
-                    valueEl.textContent = count;
-                    this.ledZones[zoneIndex].count = count;
-
-                    // 发送 LED 数量命令
-                    this.protocol.setLedCount(zoneIndex, count);
-                    this.log(`${this.ledZones[zoneIndex].name} 灯珠数: ${count}`);
+                    inputEl.value = count;
+                    // 手动触发 change 事件，统一逻辑
+                    inputEl.dispatchEvent(new Event('change'));
                 });
             });
 

@@ -1127,16 +1127,32 @@ input[type="range"]::-moz-range-thumb:hover {
     color: white;
 }
 
-.stepper-control .stepper-value {
-    min-width: 40px;
-    padding: var(--space-xs) var(--space-sm);
+.stepper-control .stepper-input {
+    width: 60px;
     background: var(--bg-card);
+    border: 1px solid var(--glass-border);
     border-radius: var(--radius-sm);
+    color: var(--primary-light);
     font-size: var(--font-size-md);
     font-weight: 600;
-    color: var(--primary-light);
     text-align: center;
-    cursor: pointer;
+    padding: 6px 0;
+    transition: all var(--transition-fast);
+    -moz-appearance: textfield;
+    font-family: inherit;
+}
+
+.stepper-control .stepper-input::-webkit-outer-spin-button,
+.stepper-control .stepper-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.stepper-control .stepper-input:focus {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary);
+    outline: none;
+    color: var(--primary);
 }
 
 .direction-toggle {
