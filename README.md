@@ -1,8 +1,8 @@
-# Web BLE OTA
+# Web BLE Ambient & OTA
 
 <div align="center">
 
-**蓝牙固件升级 Web 应用** - 基于 Web Bluetooth API
+**车载氛围灯控制与固件升级 Web 应用** - 基于 Web Bluetooth API
 
 [![GitHub Pages](https://img.shields.io/badge/Demo-GitHub%20Pages-blue)](https://a757675586.github.io/WebOTA/)
 
@@ -12,11 +12,30 @@
 
 ## ✨ 功能特性
 
-- 🔍 **设备连接** - BLE 设备扫描和一键连接
-- 📋 **信息读取** - 硬件版本、软件版本、车型信息
-- 📊 **MTU 配置** - 自动获取设备 MTU 和帧大小
-- 🚀 **OTA 升级** - 固件分帧传输，实时进度显示
-- 🎨 **现代 UI** - 玻璃态设计，响应式布局
+### 🌈 氛围灯控制
+- **色彩调节** - RGB 全色域选择，支持实时预览和拖拽调节
+- **模式切换** - 支持 **单色**、**多色** (幻彩)、**律动** (音乐跟随) 三大模式
+- **区域控制** - 6个独立区域 (主驾/副驾/四门) 的灯珠数量和方向独立配置
+- **预设主题** - 内置多种经典主题 (湖滨晴雨, 西山晴雪等) 和律动模式
+- **参数微调** - 亮度 (全局/分区)、速度、灵敏度调节
+- **双向同步** - 实时同步设备端的开关状态、亮度、颜色和模式
+
+### 🚀 OTA 固件升级
+- **固件刷写** - 支持 `bin` 文件本地上传与刷写
+- **智能分帧** - 自动处理 MTU 和数据分包
+- **进度监控** - 实时显示传输速度、剩余时间与百分比
+- **断点续传** - 智能错误重试机制
+
+### 🛠️ 工厂模式
+- **参数配置** - VIN 码、车型代码、功能编号设置
+- **灯珠校准** - 可视化配置 LED 灯珠数量与流向，**支持键盘直接输入数值**
+- **协议调试** - 完整的指令日志记录与导出功能
+
+### 🎨 现代 UI 设计
+- **玻璃态风格** - 高级毛玻璃效果与渐变背景
+- **响应式布局** - 完美适配桌面与移动端 (iOS/Android)
+- **专业导航** - 移动端底部导航栏 (iOS HIG / Material Design 3 风格)
+- **暗黑模式** - 深色系界面，护眼且高级
 
 ---
 
@@ -32,13 +51,13 @@ https://a757675586.github.io/WebOTA/
 
 ## 📱 浏览器支持
 
-| 浏览器 | 桌面版 | 移动端 |
-|:------:|:------:|:------:|
-| Chrome | ✅ | ✅ Android |
-| Edge | ✅ | ✅ Android |
-| Opera | ✅ | ✅ |
-| Safari | ❌ | ❌ iOS |
-| Firefox | ❌ | ❌ |
+| 浏览器 | 桌面版 | 移动端 | note |
+|:------:|:------:|:------:|:-----|
+| Chrome | ✅ | ✅ Android | 推荐 |
+| Edge | ✅ | ✅ Android | 推荐 |
+| Opera | ✅ | ✅ | |
+| Safari | ❌ | ❌ iOS | Web BLE 暂不支持 iOS Safari (需用 Bluefy 等浏览器) |
+| Firefox | ❌ | ❌ | |
 
 > ⚠️ **重要**: Web Bluetooth 需要 **HTTPS** 环境，本地开发需使用 `localhost`
 
@@ -71,20 +90,22 @@ npx serve -l 8080 .
 
 ```
 WebOTA/
-├── index.html              # 主页面
+├── index.html              # 入口/OTA 升级页
+├── ambient-light.html      # 氛围灯控制主页
 ├── README.md               # 项目文档
 ├── 启动服务器.bat           # 一键启动脚本
-├── .gitignore
-├── .github/
-│   └── workflows/
-│       └── deploy.yml      # GitHub Pages 自动部署
 ├── css/
-│   └── style.css           # 样式文件
+│   ├── style.css           # 通用与 OTA 样式
+│   ├── ambient.css         # 氛围灯专用样式 (玻璃态/组件)
+│   └── components.css      # 基础组件 (按钮/开关/卡片)
 └── js/
-    ├── app.js              # 主应用逻辑
-    ├── BleService.js       # BLE 连接服务
-    ├── Protocol.js         # 协议解析
-    ├── OtaService.js       # OTA 升级服务
+    ├── AmbientLightApp.js  # 氛围灯主应用逻辑
+    ├── AmbientProtocol.js  # 协议定义与封装 (指令集)
+    ├── LightController.js  # 灯光状态控制器
+    ├── ColorPicker.js      # HSL 颜色选择器组件
+    ├── BleService.js       # BLE 连接核心服务
+    ├── OtaService.js       # OTA 升级核心服务
+    ├── Protocol.js         # OTA 协议解析
     └── Utils.js            # 工具函数
 ```
 
@@ -92,21 +113,23 @@ WebOTA/
 
 ## 🔧 协议参考
 
-基于 CarLight Android 应用协议移植：
+### 服务 UUID
+- **主服务**: `0000ffe0-0000-1000-8000-00805f9b34fb`
+- **写入特征**: `0000ff03-0000-1000-8000-00805f9b34fb` (Write Without Response)
+- **通知特征**: `0000ffe1-0000-1000-8000-00805f9b34fb` (Notify)
 
-| 类型 | UUID |
-|------|------|
-| 服务 | `0000ffe0-0000-1000-8000-00805f9b34fb` |
-| 写入特征 | `0000ff03-0000-1000-8000-00805f9b34fb` |
-| 通知特征 | `0000ffe1-0000-1000-8000-00805f9b34fb` |
+### 核心指令集
 
-### 命令格式
+| 功能 | 指令头 | 示例 |
+|------|--------|------|
+| **单色控制** | `0x16 0x01` | `16 01 R G B 00` |
+| **亮度调节** | `0x16 0x02` | `16 02 Zone Value` |
+| **模式切换** | `0x16 0x03` | `16 03 Mode 00 00` |
+| **律动模式** | `0x16 0x05` | `16 05 Mode Color` |
+| **LED配置** | `0x16 0x18` | `16 18 Zone Count Direction` |
+| **OTA升级** | `0xD8` | `D8 ...` |
 
-| 命令 | 代码 | 说明 |
-|------|------|------|
-| 版本信息 | `<FC0101>` | 获取硬件/软件版本 |
-| MTU 配置 | `<FC0103>` | 获取 MTU 和帧大小 |
-| 本地升级 | `0xD8` | OTA 固件升级 |
+> 更多协议细节请查阅 `js/AmbientProtocol.js`
 
 ---
 
